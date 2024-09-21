@@ -1,0 +1,82 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.datatypes.Matrix;
+import org.firstinspires.ftc.teamcode.datatypes.ThreadSafePose;
+import org.opencv.core.Mat;
+
+public class Odometry extends Thread {
+    private ThreadSafePose pose;
+
+    private static final int CPR = 2000;
+    private static final int TRACKWIDTH = 10; //todo (dont forget units)
+    private static final int FORWARD_OFFSET = 10; //todo (dont forget units)
+
+    private static final int LEFT = 0;
+    private static final int RIGHT = 1;
+    private static final int BACK = 2;
+    private DcMotor[] encoders;
+    private double[] encoder_pos;
+    private boolean isRunning;
+
+
+    public Odometry(DcMotor[] encoders) {
+        super();
+        this.setDaemon(true);
+        this.encoders = encoders;
+        this.encoder_pos = new double[encoders.length];
+        this.pose = new ThreadSafePose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
+        this.isRunning = false;
+    }
+
+    public ThreadSafePose getPose() {
+        return pose;
+    }
+
+
+    @Override
+    public void start() {
+        isRunning = true;
+    }
+
+
+    @Override
+    public void run() {
+        while(isRunning) {
+            double[] encoder_delta = new double[encoders.length];
+
+            // calculate delta for all encoder positions
+            for (int i = 0; i<encoders.length; i++) {
+                double current_pos = encoders[i].getCurrentPosition()/(double)CPR;// divide to convert units to revolutions
+                encoder_delta[i] = current_pos - encoder_pos[i];
+                encoder_pos[i] = current_pos;
+            }
+
+            double phi = (encoder_delta[LEFT] - encoder_delta[RIGHT]) / TRACKWIDTH;
+            double delta_middle = (encoder_delta[LEFT] + encoder_delta[RIGHT])/2;
+            double delta_perp = encoder_delta[BACK] - FORWARD_OFFSET * phi;
+
+            double heading = pose.getR();
+            Matrix rotation = new Matrix(new double[][]{
+                    {Math.cos(heading), -Math.sin(heading), 0},
+                    {Math.sin(heading), Math.cos(heading),  0},
+                    {0                , 0                ,  1}}
+            );
+            Matrix curvature = new Matrix(new double[][]{
+                    {(Math.sin(phi)) / phi  , (Math.cos(phi)-1)/phi, 0},
+                    {(1-Math.cos(phi)) / phi, (Math.sin(phi))/phi  , 0},
+                    {0                      , 0                    , 1}}
+            );
+            Matrix local_delta = new Matrix(new double[][]{
+                    {delta_middle},
+                    {delta_perp},
+                    {phi}
+            });
+            Matrix pose_delta = rotation.multiply(curvature).multiply(local_delta);
+            pose.add(pose_delta);
+
+        }
+    }
+
+}
