@@ -175,7 +175,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
-            // Show the elapsed game time and wheel power
+            // Show the elapsed game time and wheel power and odometry is in cm
             telemetry.addData("leftDW", ((leftDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
             telemetry.addData("rightDW", ((rightDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
             telemetry.addData("backDW", ((backDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
