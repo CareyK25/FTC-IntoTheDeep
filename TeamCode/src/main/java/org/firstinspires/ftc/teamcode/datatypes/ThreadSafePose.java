@@ -1,0 +1,45 @@
+package org.firstinspires.ftc.teamcode.datatypes;
+
+public class ThreadSafePose {
+    //listed in order x, y, r
+    private volatile double[] pose;
+
+    public ThreadSafePose(double[] pose) {
+        this.pose = pose;
+    }
+
+    public double[] getPose() {
+        return pose;
+    }
+    public double getX() {
+        return pose[0];
+    }
+    public double getY() {
+        return pose[1];
+    }
+    public double getR() {
+        return pose[2];
+    }
+
+    public void setPose(double[] pose) {
+        this.pose = pose;
+    }
+
+    public void add(double[] pose_delta) {
+        for (int i = 0; i<this.pose.length; i++) {
+            pose[i] += pose_delta[i];
+        }
+    }
+
+    public void add(Matrix pose_delta) {
+        for (int i = 0; i<this.pose.length; i++) {
+            pose[i] += pose_delta.getMatrix()[i][0];
+        }
+    }
+    public void subtract(double[] pose_delta) {
+        for (int i = 0; i<this.pose.length; i++) {
+            pose[i] -= pose_delta[i];
+        }
+    }
+
+}
