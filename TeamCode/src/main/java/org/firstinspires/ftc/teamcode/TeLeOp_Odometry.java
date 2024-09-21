@@ -29,11 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.lang.Math;
 import org.openftc.easyopencv.PipelineRecordingParameters;
@@ -69,7 +67,7 @@ import org.openftc.easyopencv.PipelineRecordingParameters;
 @TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
 
 
-public class BasicOmniOpMode_Linear extends LinearOpMode {
+public class TeLeOp_Odometry extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -78,14 +76,18 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    private  DcMotor leftDw = null;
-    private  DcMotor rightDw = null;
-    private  DcMotor backDw = null;
+
+    private  DcMotor leftDw = leftBackDrive;
+    private  DcMotor rightDw = rightFrontDrive;
+    private  DcMotor backDw = leftFrontDrive;
+
+    private Odometry otto = new Odometry(new DcMotor[]{leftDw, rightDw, backDw});
 
     public static final int CPR = 2000;
     private PipelineRecordingParameters.Encoder left;
     private PipelineRecordingParameters.Encoder right;
     private PipelineRecordingParameters.Encoder back;
+
 
     @Override
     public void runOpMode() {
@@ -98,9 +100,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
 
-        leftDw = leftBackDrive;
-        rightDw = rightFrontDrive;
-        backDw = leftFrontDrive;
+
+
         leftDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);// Reset the motor encoder
@@ -136,6 +137,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         leftDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        otto.start();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
