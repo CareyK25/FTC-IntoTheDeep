@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Odometry.CPR;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -76,17 +78,8 @@ public class TeLeOp_Odometry extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-
-    private  DcMotor leftDw = leftBackDrive;
-    private  DcMotor rightDw = rightFrontDrive;
-    private  DcMotor backDw = leftFrontDrive;
-
-    private Odometry otto = new Odometry(new DcMotor[]{leftDw, rightDw, backDw});
-
-    public static final int CPR = 2000;
-    private PipelineRecordingParameters.Encoder left;
-    private PipelineRecordingParameters.Encoder right;
-    private PipelineRecordingParameters.Encoder back;
+    //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
+    private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
 
 
     @Override
@@ -101,23 +94,6 @@ public class TeLeOp_Odometry extends LinearOpMode {
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
 
 
-
-        leftDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);// Reset the motor encoder
-        leftDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -131,19 +107,10 @@ public class TeLeOp_Odometry extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        leftDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backDw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);// Reset the motor encoder
-        leftDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backDw.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
         otto.start();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -171,7 +138,6 @@ public class TeLeOp_Odometry extends LinearOpMode {
                 rightBackPower  /= max;
             }
 
-
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
             rightFrontDrive.setPower(rightFrontPower);
@@ -180,9 +146,9 @@ public class TeLeOp_Odometry extends LinearOpMode {
 
             // Show the elapsed game time and wheel power and odometry is in cm
             telemetry.addData("Pose" , otto.toString());
-            telemetry.addData("leftDW", ((leftDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
-            telemetry.addData("rightDW", ((rightDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
-            telemetry.addData("backDW", ((backDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
+            telemetry.addData("leftEncoder", otto.ticksToCm(otto.getLeftEncoder().getCurrentPosition()));
+            telemetry.addData("rightEncoder", otto.ticksToCm(otto.getRightEncoder().getCurrentPosition()));
+            telemetry.addData("backEncoder", otto.ticksToCm(otto.getBackEncoder().getCurrentPosition()));
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
