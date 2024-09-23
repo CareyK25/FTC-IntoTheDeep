@@ -7,15 +7,21 @@ import org.firstinspires.ftc.teamcode.datatypes.ThreadSafePose;
 import org.opencv.core.Mat;
 
 public class Odometry extends Thread {
-    private ThreadSafePose pose;
+    private final ThreadSafePose pose;
 
-    private static final int CPR = 2000;
+
+    public static final int CPR = 2000; // in ticks
+    public static final double DEADWHEEL_RADIUS = 1.6; // in CM
+    public static final double DEADWHEEL_CIRCUMFERENCE = 2*Math.PI*DEADWHEEL_RADIUS; // in CM
+
     private static final int TRACKWIDTH = 10; //todo (dont forget units)
     private static final int FORWARD_OFFSET = 10; //todo (dont forget units)
 
-    private static final int LEFT = 0;
-    private static final int RIGHT = 1;
-    private static final int BACK = 2;
+    // used to grab encoders from the array with more readablility
+    public static final int LEFT = 0;
+    public static final int RIGHT = 1;
+    public static final int BACK = 2;
+
     private DcMotor[] encoders;
     private double[] encoder_pos;
     private boolean isRunning;
@@ -34,11 +40,20 @@ public class Odometry extends Thread {
         return pose;
     }
 
+    public DcMotor[] getEncoders() {return encoders;}
+    public DcMotor getLeftEncoder() {return encoders[LEFT];}
+    public DcMotor getRightEncoder() {return encoders[RIGHT];}
+    public DcMotor getBackEncoder() {return encoders[BACK];}
+
     public void resetEncoders() {
         for (DcMotor enc : encoders) {
             enc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             enc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+    }
+
+    public double ticksToCm(double ticks) {
+        return (ticks/CPR)*DEADWHEEL_CIRCUMFERENCE;
     }
 
 
@@ -56,7 +71,7 @@ public class Odometry extends Thread {
 
             // calculate delta for all encoder positions
             for (int i = 0; i<encoders.length; i++) {
-                double current_pos = encoders[i].getCurrentPosition()/(double)CPR;// divide to convert units to revolutions
+                double current_pos = ticksToCm(encoders[i].getCurrentPosition());
                 encoder_delta[i] = current_pos - encoder_pos[i];
                 encoder_pos[i] = current_pos;
             }
@@ -83,8 +98,6 @@ public class Odometry extends Thread {
             });
             Matrix pose_delta = rotation.multiply(curvature).multiply(local_delta);
             pose.add(pose_delta);
-
         }
     }
-
 }
