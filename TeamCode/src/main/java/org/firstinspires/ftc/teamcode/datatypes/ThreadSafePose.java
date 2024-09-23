@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.datatypes;
 
+import androidx.annotation.NonNull;
+
 public class ThreadSafePose {
     //listed in order x, y, r
     private volatile double[] pose;
@@ -40,6 +42,12 @@ public class ThreadSafePose {
         for (int i = 0; i<this.pose.length; i++) {
             pose[i] -= pose_delta[i];
         }
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "X: " + this.getX() + " Y: " + this.getY() + " Heading: " + this.getR();
     }
 
 }
