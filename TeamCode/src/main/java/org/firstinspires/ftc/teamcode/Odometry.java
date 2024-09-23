@@ -34,10 +34,18 @@ public class Odometry extends Thread {
         return pose;
     }
 
+    public void resetEncoders() {
+        for (DcMotor enc : encoders) {
+            enc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            enc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    }
+
 
     @Override
     public void start() {
         isRunning = true;
+        resetEncoders();
     }
 
 
