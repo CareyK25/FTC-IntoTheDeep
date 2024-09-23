@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.datatypes;
 
+import androidx.annotation.NonNull;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
@@ -45,6 +47,21 @@ public class Matrix {
             }
         }
         return new Matrix(product);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        for (double[] row : this.matrix) {
+            str.append("|");
+            for (double d : row) {
+                str.append(d).append(", ");
+            }
+            str.delete(str.length()-2, str.length());//trim trailing ", "
+            str.append("|\n");
+        }
+        return str.toString();
     }
 }
 
