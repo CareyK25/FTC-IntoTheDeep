@@ -179,6 +179,7 @@ public class TeLeOp_Odometry extends LinearOpMode {
             rightBackDrive.setPower(rightBackPower);
 
             // Show the elapsed game time and wheel power and odometry is in cm
+            telemetry.addData("Pose" , otto.toString());
             telemetry.addData("leftDW", ((leftDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
             telemetry.addData("rightDW", ((rightDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
             telemetry.addData("backDW", ((backDw.getCurrentPosition()/(double)CPR)*2*Math.PI*16)/10);
