@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.datatypes;
 
 import androidx.annotation.NonNull;
 
+import org.opencv.core.Mat;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
@@ -47,6 +49,32 @@ public class Matrix {
             }
         }
         return new Matrix(product);
+    }
+
+    public Matrix add(Matrix m2) {
+        if (!((this.getHeight()==m2.getHeight()) && (this.getWidth() == m2.getWidth()))) {
+            return null; // cannot add these matrices
+        }
+        double[][] sum = new double[this.getHeight()][this.getWidth()];
+        for (int h = 0; h<this.getHeight(); h++) {
+            for (int w = 0; w<this.getWidth(); w++) {
+                sum[h][w] = this.getMatrix()[h][w] + m2.getMatrix()[h][w];
+            }
+        }
+        return new Matrix(sum);
+    }
+
+    public Matrix subtract(Matrix m2) {
+        if (!((this.getHeight()==m2.getHeight()) && (this.getWidth() == m2.getWidth()))) {
+            return null; // cannot add these matrices
+        }
+        double[][] difference = new double[this.getHeight()][this.getWidth()];
+        for (int h = 0; h<this.getHeight(); h++) {
+            for (int w = 0; w<this.getWidth(); w++) {
+                difference[h][w] = this.getMatrix()[h][w] - m2.getMatrix()[h][w];
+            }
+        }
+        return new Matrix(difference);
     }
 
     @NonNull
