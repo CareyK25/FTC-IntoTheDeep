@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.Odometry.CPR;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -66,7 +64,7 @@ import org.openftc.easyopencv.PipelineRecordingParameters;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
+@TeleOp(name="TeLeOp_Odometry", group="Linear OpMode")
 
 
 public class TeLeOp_Odometry extends LinearOpMode {
@@ -92,7 +90,7 @@ public class TeLeOp_Odometry extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
-
+        otto.setEncoders(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -107,8 +105,8 @@ public class TeLeOp_Odometry extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        otto.start();
-
+        //otto.start();
+        otto.resetEncoders();
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
@@ -145,7 +143,7 @@ public class TeLeOp_Odometry extends LinearOpMode {
             rightBackDrive.setPower(rightBackPower);
 
             // Show the elapsed game time and wheel power and odometry is in cm
-            telemetry.addData("Pose" , otto.toString());
+            telemetry.addData("Pose" , otto.getPose().toString());
             telemetry.addData("leftEncoder", otto.ticksToCm(otto.getLeftEncoder().getCurrentPosition()));
             telemetry.addData("rightEncoder", otto.ticksToCm(otto.getRightEncoder().getCurrentPosition()));
             telemetry.addData("backEncoder", otto.ticksToCm(otto.getBackEncoder().getCurrentPosition()));
@@ -153,5 +151,7 @@ public class TeLeOp_Odometry extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
+
+            otto.updateOdometry();
         }
     }}
