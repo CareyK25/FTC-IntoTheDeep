@@ -30,6 +30,7 @@ public class Matrix {
         this.matrix = matrix;
     }
 
+
     public Matrix multiply(Matrix m2) {
         if (!(this.getWidth() == m2.getHeight())) {
             return null; // cannot multiply these matrices

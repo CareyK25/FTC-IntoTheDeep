@@ -24,8 +24,36 @@ public class Pair {
         this.y = y;
     }
 
+    public void rotate(double radians) {
+        x = x*Math.cos(radians) - y*Math.sin(radians);
+        y = x*Math.sin(radians) + y*Math.cos(radians);
+    }
+
     public void add(Pair p2) {
         this.x += p2.getX();
         this.y += p2.getY();
+    }
+
+    public void normalize(double height, double width) {
+        x = x/width;
+        y = y/height;
+    }
+    public void normalize(Pair dim) {
+        normalize(dim.getY(), dim.getX());
+    }
+
+    public void rasterize(double height, double width) {
+        x = Math.round(x*width);
+        y = Math.round(y*height);
+    }
+    public void rasterize(Pair dim) {
+        rasterize(dim.getY(), dim.getX());
+    }
+
+    public Pair getRasterized(double height, double width) {
+        return new Pair(Math.round(x*width), Math.round(y*height));
+    }
+    public Pair getRasterized(Pair dim) {
+        return getRasterized(dim.getY(), dim.getX());
     }
 }

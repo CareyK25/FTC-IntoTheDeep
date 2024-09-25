@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 public class ThreadSafePose {
     //listed in order x, y, r
-    private volatile double[] pose;
+    private double[] pose;
 
     public ThreadSafePose(double[] pose) {
         this.pose = pose;
