@@ -17,7 +17,7 @@ public class Odometry extends Thread {
     public static final double DEADWHEEL_RADIUS = 2.4; // in CM
     public static final double DEADWHEEL_CIRCUMFERENCE = 2*Math.PI*DEADWHEEL_RADIUS; // in CM
 
-    // odometry calculation constants
+    //  odometry calculation constants
     private static final double TRACKWIDTH = 28.33; //todo (do it in CM)
     private static final double FORWARD_OFFSET = 14.5; //todo (do it in CM)
 
