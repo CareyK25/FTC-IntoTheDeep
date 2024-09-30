@@ -13,15 +13,16 @@ public class BoundingBox {
     }
 
     public void rotate(double radians) {
-        rotation += radians-rotation;
         for (Pair vertex : vertices) {
             vertex.rotate(radians-rotation);
         }
+        rotation += radians-rotation;
     }
 
 
     public ArrayList<Pixel> render() {
         ArrayList<Pixel> pixels = new ArrayList<>();
+        pixels.addAll(Line.render(vertices[vertices.length-1], vertices[0]));
         for (int i = 1; i<vertices.length; i++) {
             pixels.addAll(Line.render(vertices[i-1], vertices[i]));
         }

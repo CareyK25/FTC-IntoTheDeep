@@ -81,12 +81,13 @@ public class TeLeOp_Odometry_Display extends LinearOpMode {
     private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
 
 
-    private Display disp = new Display(19, 100, telemetry);
+    private Display disp = new Display(19, 20, telemetry);
     private BoundingBox bbTest = new BoundingBox(new Pair[]{
-            new Pair(-1, -2),
-            new Pair(1, -2),
-            new Pair(-1, 2),
-            new Pair(1, 2),
+            new Pair(-3, -6),
+            new Pair(3, -6),
+            new Pair(3, 6),
+            new Pair(-3, 6),
+
 
     });
     @Override

@@ -27,7 +27,7 @@ public class Display {
         for (int i = 0; i<getHeight(); i++) {
             String line = "";
             for (int j = 0; j<getWidth(); j++) {
-                line += display[i][j];
+                line += monoify(display[i][j]);
             }
             telemetry.addLine(line);
         }
@@ -61,6 +61,23 @@ public class Display {
 
             }
         }
+    }
+
+    public String monoify(char c) {
+        switch (c) {
+            case ' ':
+                return "   ";
+            case '-':
+                return "---";
+            case '|':
+                return " | ";
+            case '/':
+                return " / ";
+            case '\\':
+                return " \\ ";
+        }
+
+        return " " + c + " ";
     }
 
 }

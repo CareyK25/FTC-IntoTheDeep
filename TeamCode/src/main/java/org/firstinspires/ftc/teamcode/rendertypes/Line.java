@@ -48,11 +48,8 @@ public class Line {
     }
 
     //implementation of brezenham's line algorithm
-    public static ArrayList<Pixel> render(Pair start, Pair end) { // modified Brezenham line algorithm
-        ArrayList<Pixel> lineCoords = new ArrayList<>();// pixels that make up the line
-
-        //lintex array is a preset format from blocks that defines the line textures at certain slopes
-
+    public static ArrayList<Pixel> render(Pair start, Pair end) {
+        ArrayList<Pixel> lineCoords = new ArrayList<>();
 
         int x1 = (int)start.getX();// start x
         int y1 = (int)start.getY();// start y
@@ -60,6 +57,7 @@ public class Line {
         int x2 = (int)end.getX();// end x
         int y2 = (int)end.getY();// end y
 
+        //double lineDepth = (vertices2D[line.getStart()].getDepth() + vertices2D[line.getEnd()].getDepth())/2;
 
         // delta of exact value and rounded value of the dependent variable
         int d = 0;
@@ -81,20 +79,27 @@ public class Line {
 
         if (dx > dy) {
             while (true) {
+                if (!isSlope) {
+                    lineChar = '-';
+                }
                 lineCoords.add(new Pixel(x, y, lineChar));
                 if (x == x2)
                     break;
                 x += ix;
                 d += dy2;
                 if (d > dx) {
+                    lineChar = (ix == 1 && iy == 1)||(ix == -1 && iy == -1) ? '\\':'/';
+                    isSlope = true;
                     y += iy;
                     d -= dx2;
+                } else {
+                    isSlope = false;
                 }
             }
         } else {
             while (true) {
                 if (!isSlope) {
-                    lineChar = textures[2];
+                    lineChar = '|';
                 }
                 lineCoords.add(new Pixel(x, y, lineChar));
                 if (y == y2)
@@ -102,16 +107,17 @@ public class Line {
 
                 y += iy;
                 d += dx2;
-
                 if (d > dy) {
-                    lineChar = ix != 1 ? textures[3] : textures[0];
+                    //lineChar = ix ==1 ? '\\':'/';
+                    lineChar = (ix ==1 && iy>0)||(ix<1&&iy<0) ? '\\':'/';
                     isSlope = true;
                     x += ix;
                     d -= dy2;
+                } else {
+                    isSlope = false;
                 }
             }
         }
-
         return lineCoords;
     }
 
