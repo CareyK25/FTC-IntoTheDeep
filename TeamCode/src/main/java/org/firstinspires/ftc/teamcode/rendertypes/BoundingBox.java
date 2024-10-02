@@ -6,18 +6,33 @@ import java.util.ArrayList;
 
 public class BoundingBox {
     private Pair[] vertices;
+    private final Pair[] localVertices; // refrence for the object
+    //local are kept constant as a reference to avoid accumulating error when rotating
 
     private double rotation;
     public BoundingBox(Pair[] vertices) {
-        this.vertices = vertices;
+
+        this.localVertices = vertices;
+        this.vertices = new Pair[vertices.length];
+        for (int i = 0; i<vertices.length; i++) {
+            vertices[i] = localVertices[i].copy();
+        }
     }
 
     public void rotate(double radians) {
+        for (int i = 0; i<vertices.length; i++) {
+            vertices[i] = localVertices[i].getRotated(radians);
+        }
+    }
+
+    public void locallyRotate(double radians) {
         for (Pair vertex : vertices) {
             vertex.rotate(radians-rotation);
         }
         rotation += radians-rotation;
     }
+
+
 
 
     public ArrayList<Pixel> render() {

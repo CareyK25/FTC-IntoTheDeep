@@ -28,6 +28,12 @@ public class Pair {
         x = x*Math.cos(radians) - y*Math.sin(radians);
         y = x*Math.sin(radians) + y*Math.cos(radians);
     }
+    public Pair getRotated(double radians) {
+        return new Pair(
+                x*Math.cos(radians) - y*Math.sin(radians),
+                x*Math.sin(radians) + y*Math.cos(radians));
+    }
+
 
     public void add(Pair p2) {
         this.x += p2.getX();
@@ -56,4 +62,9 @@ public class Pair {
     public Pair getRasterized(Pair dim) {
         return getRasterized(dim.getY(), dim.getX());
     }
+
+    public Pair copy() {
+        return new Pair(x, y);
+    }
+
 }
