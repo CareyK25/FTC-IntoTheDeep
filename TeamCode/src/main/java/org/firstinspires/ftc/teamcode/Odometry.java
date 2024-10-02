@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.datatypes.Matrix;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
 
-public class Odometry extends Thread {
+public class Odometry {
     private final Pose pose;
 
 
@@ -28,15 +28,12 @@ public class Odometry extends Thread {
 
     private double[] encoder_pos; // stores previous encoder positions
 
-    private boolean isRunning;
+
 
     public Odometry(DcMotor[] encoders) {
-        super();
-        this.setDaemon(true);
         this.encoders = encoders;
         this.encoder_pos = new double[3];
         this.pose = new Pose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
-        this.isRunning = false;
     }
 
     public void setEncoders(DcMotor[] encoders) {
@@ -64,57 +61,9 @@ public class Odometry extends Thread {
     }
 
 
-    @Override
-    public void start() {
-        isRunning = true;
-        resetEncoders();
-    }
 
 
-    @Override
-    public void run() {
-        while(isRunning) {
-            double[] encoder_delta = new double[encoders.length];
 
-            // calculate delta for all encoder positions
-            for (int i = 0; i<encoders.length; i++) {
-                double current_pos = ticksToCm(encoders[i].getCurrentPosition()); // use CM as units
-                encoder_delta[i] = current_pos - encoder_pos[i];
-                encoder_pos[i] = current_pos;
-            }
-
-            double phi = (encoder_delta[LEFT] - encoder_delta[RIGHT]) / TRACKWIDTH;
-            double delta_middle = (encoder_delta[LEFT] + encoder_delta[RIGHT])/2;
-            double delta_perp = encoder_delta[BACK] - FORWARD_OFFSET * phi;
-
-            double heading = pose.getR();
-            Matrix rotation = new Matrix(new double[][]{
-                    {Math.cos(heading), -Math.sin(heading), 0},
-                    {Math.sin(heading), Math.cos(heading),  0},
-                    {0                , 0                ,  1}}
-            );
-            Matrix curvature = new Matrix(new double[][]{
-                    {(Math.sin(phi)) / phi  , (Math.cos(phi)-1)/phi, 0},
-                    {(1-Math.cos(phi)) / phi, (Math.sin(phi))/phi  , 0},
-                    {0                      , 0                    , 1}}
-            );
-            Matrix local_delta = new Matrix(new double[][]{
-                    {delta_middle},
-                    {delta_perp},
-                    {phi}
-            });
-            Matrix pose_delta = (phi != 0) ?
-                    rotation.multiply(curvature).multiply(local_delta) :
-                    rotation.multiply(local_delta);
-            telemetry.addData("pose delta", pose_delta.toString());
-            pose.add(pose_delta);
-        }
-        try {
-            Thread.sleep(10);
-        } catch (Exception e) {
-
-        }
-    }
 
     public void updateOdometry() {
         double[] encoder_delta = new double[encoders.length];
