@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.datatypes;
 
 import androidx.annotation.NonNull;
 
-public class ThreadSafePose {
+public class Pose {
     //listed in order x, y, r
     private double[] pose;
 
-    public ThreadSafePose(double[] pose) {
+    public Pose(double[] pose) {
         this.pose = pose;
     }
 

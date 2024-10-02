@@ -5,11 +5,10 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.tel
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.datatypes.Matrix;
-import org.firstinspires.ftc.teamcode.datatypes.ThreadSafePose;
-import org.opencv.core.Mat;
+import org.firstinspires.ftc.teamcode.datatypes.Pose;
 
 public class Odometry extends Thread {
-    private final ThreadSafePose pose;
+    private final Pose pose;
 
 
     // unit conversion constants
@@ -36,7 +35,7 @@ public class Odometry extends Thread {
         this.setDaemon(true);
         this.encoders = encoders;
         this.encoder_pos = new double[3];
-        this.pose = new ThreadSafePose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
+        this.pose = new Pose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
         this.isRunning = false;
     }
 
@@ -44,7 +43,7 @@ public class Odometry extends Thread {
         this.encoders = encoders;
     }
 
-    public ThreadSafePose getPose() {
+    public Pose getPose() {
         return pose;
     }
 
