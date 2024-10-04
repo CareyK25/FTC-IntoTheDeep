@@ -17,7 +17,6 @@ public class GameMap {
         this.resolution = resolution;
         this.map = new char[(int)resolution.getX()][(int)resolution.getY()];
 
-
     }
 
     public void renderBuffer(Pair res) {

@@ -27,6 +27,10 @@ public class Pose {
         this.pose = pose;
     }
 
+    public void setR(double rot) {
+        this.pose[2] = rot;
+    }
+
     public void add(double[] pose_delta) {
         for (int i = 0; i<this.pose.length; i++) {
             pose[i] += pose_delta[i];

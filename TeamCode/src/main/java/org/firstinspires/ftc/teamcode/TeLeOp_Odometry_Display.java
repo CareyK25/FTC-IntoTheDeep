@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
@@ -77,8 +78,10 @@ public class TeLeOp_Odometry_Display extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
+    private IMU imu = null;
+
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
-    private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
+    private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive}, imu);
 
 
     private Display disp = new Display(19, 20, telemetry);

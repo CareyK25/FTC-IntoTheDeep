@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.datatypes.Matrix;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
@@ -25,19 +26,32 @@ public class Odometry {
     public static final int RIGHT = 1;
     public static final int BACK = 2;
     private DcMotor[] encoders;
+    private IMU imu;
 
     private double[] encoder_pos; // stores previous encoder positions
-
+    private double imu_rot;
 
 
     public Odometry(DcMotor[] encoders) {
         this.encoders = encoders;
         this.encoder_pos = new double[3];
+        this.imu_rot = 0;
         this.pose = new Pose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
+        this.imu = null;
+    }
+    public Odometry(DcMotor[] encoders, IMU imu) {
+        this.encoders = encoders;
+        this.encoder_pos = new double[3];
+        this.imu_rot = 0;
+        this.pose = new Pose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
+        this.imu = imu;
     }
 
     public void setEncoders(DcMotor[] encoders) {
         this.encoders = encoders;
+    }
+    public void setImu(IMU imu) {
+        this.imu = imu;
     }
 
     public Pose getPose() {
@@ -75,7 +89,14 @@ public class Odometry {
             encoder_pos[i] = current_pos;
         }
 
-        double phi = (encoder_delta[LEFT] - encoder_delta[RIGHT]) / TRACKWIDTH;
+        double phi = 0;
+        if (imu == null) {
+            phi = (encoder_delta[LEFT] - encoder_delta[RIGHT]) / TRACKWIDTH;
+        } else {
+            double yaw = -Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw());
+            phi = yaw - imu_rot;
+            imu_rot = yaw;
+        }
         double delta_middle = (encoder_delta[LEFT] + encoder_delta[RIGHT])/2;
         double delta_perp = encoder_delta[BACK] - FORWARD_OFFSET * phi;
 
@@ -104,5 +125,10 @@ public class Odometry {
                 rotation.multiply(local_delta);
 
         pose.add(pose_delta);
+        if (imu != null) {
+            pose.setR(-Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw()));
+        }
+
+
     }
 }

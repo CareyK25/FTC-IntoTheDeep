@@ -19,6 +19,15 @@ public class BoundingBox {
         }
     }
 
+    public BoundingBox(Pair[] vertices, Pair boxScale) {
+        this.localVertices = vertices;
+        this.vertices = new Pair[vertices.length];
+        for (int i = 0; i<vertices.length; i++) {
+            vertices[i].rasterize(boxScale.getY(), boxScale.getX());
+            vertices[i] = localVertices[i].copy();
+        }
+    }
+
     public void rotate(double radians) {
         for (int i = 0; i<vertices.length; i++) {
             vertices[i] = localVertices[i].getRotated(radians);
@@ -31,6 +40,7 @@ public class BoundingBox {
         }
         rotation += radians-rotation;
     }
+
 
 
 
