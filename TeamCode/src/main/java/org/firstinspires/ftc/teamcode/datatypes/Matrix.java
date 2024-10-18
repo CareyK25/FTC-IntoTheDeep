@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.datatypes;
 import androidx.annotation.NonNull;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Range;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
