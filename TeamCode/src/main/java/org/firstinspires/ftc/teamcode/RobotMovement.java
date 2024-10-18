@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
 import org.firstinspires.ftc.teamcode.util.MathFunctions;
 
 public class RobotMovement {
-    public static void goToPosition(double x, double y, double movementSpeed, double targetHeading, Pose robotPos, double turnSpeed) {
-        double absoluteAngleToTarget = Math.atan2(y- robotPos.getY(), x- robotPos.getX());
+    public static double[] goToPosition(double x, double y, double movementSpeed, double targetHeading, Pose robotPos, double turnSpeed) {
+        double absoluteAngleToTarget = Math.atan2(y- robotPos.getY(), x- robotPos.getX());// Global angle
         double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
         double dist = Math.sqrt(Math.pow(y- robotPos.getY(), 2) + Math.pow(x- robotPos.getX(), 2));//Math.hypot(y-GraphicsLineCircle.WorldPosY, x-GraphicsLineCircle.WorldPosX);
         double deltaX = x- robotPos.getX();
         double deltaY = y- robotPos.getY();
-        double movementXPower = deltaX/(Math.abs(deltaX) + Math.abs(deltaY));
+        Pair local = new Pair(deltaX, deltaY);
+        local.rotate(-robotPos.getR()); //turns local axis into global axis
+        double movementXPower = deltaX/(Math.abs(deltaX) + Math.abs(deltaY)); // Normalizes the movement Power
         double movementYPower = deltaY/(Math.abs(deltaX) + Math.abs(deltaY));
         double dX = movementXPower*movementSpeed;
         double dY = movementYPower*movementSpeed;
@@ -26,6 +29,6 @@ public class RobotMovement {
             deltaHeading = Math.min(deltaHeading, 0);
         }
         System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
-
+        return new double[]{dX, dY, deltaHeading};
     }
 }
