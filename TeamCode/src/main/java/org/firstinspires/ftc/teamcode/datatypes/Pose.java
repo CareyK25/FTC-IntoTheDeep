@@ -9,6 +9,9 @@ public class Pose {
     public Pose(double[] pose) {
         this.pose = pose;
     }
+    public Pose(double x, double y, double r) {
+        this.pose = new double[] {x, y, r};
+    }
 
     public double[] getPose() {
         return pose;
