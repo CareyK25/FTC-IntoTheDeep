@@ -53,7 +53,7 @@ public class PurePursuitTest extends LinearOpMode {
         while (opModeIsActive()) {
             double max;
 
-            double [] deltas = RobotMovement.goToPosition(otto.getPose().getX(), otto.getPose().getY(), .5, 0, targetPose, .5);
+            double [] deltas = RobotMovement.goToPosition(targetPose, .5, otto.getPose());
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = deltas[1];  // Note: pushing stick forward gives negative value
             double lateral =  deltas[0];

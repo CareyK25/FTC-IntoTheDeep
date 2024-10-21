@@ -31,4 +31,19 @@ public class RobotMovement {
         System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
         return new double[]{dX, dY, deltaHeading};
     }
+    public static double[] goToPosition(Pose targetPose, double movementSpeed, Pose robotPos) {
+        double absoluteAngleToTarget = Math.atan2(targetPose.getY()- robotPos.getY(), targetPose.getX()- robotPos.getX());// Global angle
+        double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
+        double dist = Math.sqrt(Math.pow(targetPose.getY()- robotPos.getY(), 2) + Math.pow(targetPose.getX()- robotPos.getX(), 2));//Math.hypot(y-GraphicsLineCircle.WorldPosY, x-GraphicsLineCircle.WorldPosX);
+        double deltaX = targetPose.getX()- robotPos.getX();
+        double deltaY = targetPose.getY()- robotPos.getY();
+        Pair local = new Pair(deltaX, deltaY);
+        local.rotate(-robotPos.getR()); //turns local axis into global axis
+        double movementXPower = deltaX/(Math.abs(deltaX) + Math.abs(deltaY)); // Normalizes the movement Power
+        double movementYPower = deltaY/(Math.abs(deltaX) + Math.abs(deltaY));
+        double dX = movementXPower*movementSpeed;
+        double dY = movementYPower*movementSpeed;
+        //System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
+        return new double[]{dX, dY, robotPos.getR()};
+    }
 }
