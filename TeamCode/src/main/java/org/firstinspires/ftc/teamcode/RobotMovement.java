@@ -44,6 +44,6 @@ public class RobotMovement {
         double dX = movementXPower*movementSpeed;
         double dY = movementYPower*movementSpeed;
         //System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
-        return new double[]{dX, dY, robotPos.getR()};
+        return new double[]{dX, dY, 0};
     }
 }
