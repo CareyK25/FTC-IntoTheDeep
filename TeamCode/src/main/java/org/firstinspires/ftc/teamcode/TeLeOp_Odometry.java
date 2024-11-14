@@ -1,96 +1,50 @@
-/* Copyright (c) 2021 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 
 package org.firstinspires.ftc.teamcode;
+
+import static org.firstinspires.ftc.teamcode.util.Constants.BACK_LEFT;
+import static org.firstinspires.ftc.teamcode.util.Constants.BACK_RIGHT;
+import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_LEFT;
+import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_RIGHT;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.lang.Math;
-import org.openftc.easyopencv.PipelineRecordingParameters;
 
 
-@TeleOp(name="TeLeOp_Odometry", group="Linear OpMode")
+@TeleOp(name="Andys_Op_Mode", group="Linear OpMode")
 
 
 public class TeLeOp_Odometry extends LinearOpMode {
-
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
-
-    private IMU imu = null;
-
-    //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
-    private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
-    private Odometry otto2 = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive}, imu);
-
+    private DcMotor[] motors = new DcMotor[4];
 
     @Override
     public void runOpMode() {
 
-
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "frontLeft");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
-        imu = hardwareMap.get(IMU.class, "imu");
-        otto.setEncoders(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
-        otto2.setEncoders(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
-        otto2.setImu(imu);
+        motors[FRONT_LEFT]  = hardwareMap.get(DcMotor.class, "frontLeft");
+        motors[BACK_LEFT]  = hardwareMap.get(DcMotor.class, "backLeft");
+        motors[FRONT_RIGHT] = hardwareMap.get(DcMotor.class, "frontRight");
+        motors[BACK_RIGHT] = hardwareMap.get(DcMotor.class, "backRight");
 
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        motors[FRONT_LEFT].setDirection(DcMotor.Direction.FORWARD);
+        motors[BACK_LEFT].setDirection(DcMotor.Direction.REVERSE);
+        motors[FRONT_RIGHT].setDirection(DcMotor.Direction.REVERSE);
+        motors[BACK_RIGHT].setDirection(DcMotor.Direction.FORWARD);
 
         // Wait for the game to start (driver presses START)
-
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
         waitForStart();
         runtime.reset();
 
-        //otto.start();
-        otto2.resetEncoders();
-        otto.resetEncoders();
-        imu.resetYaw();
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        while (opModeIsActive()) { // THIS IS THE MAIN LOOP
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -104,7 +58,6 @@ public class TeLeOp_Odometry extends LinearOpMode {
             double rightFrontPower = axial - lateral - yaw;
             double leftBackPower   = axial - lateral + yaw;
             double rightBackPower  = axial + lateral - yaw;
-
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -119,26 +72,15 @@ public class TeLeOp_Odometry extends LinearOpMode {
             }
 
             // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
+            motors[FRONT_LEFT].setPower(leftFrontPower);
+            motors[FRONT_RIGHT].setPower(rightFrontPower);
+            motors[BACK_LEFT].setPower(leftBackPower);
+            motors[BACK_RIGHT].setPower(rightBackPower);
 
-            // Show the elapsed game time and wheel power and odometry is in cm
-            telemetry.addData("IMURot", Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw()));
-            telemetry.addData("PoseRot" , otto.getPose().getR());
-
-            telemetry.addData("Pose" , otto.getPose());
-            telemetry.addData("IMUPose", otto2.getPose());
-            telemetry.addData("leftEncoder", otto.ticksToCm(otto.getLeftEncoder().getCurrentPosition()));
-            telemetry.addData("rightEncoder", otto.ticksToCm(otto.getRightEncoder().getCurrentPosition()));
-            telemetry.addData("backEncoder", otto.ticksToCm(otto.getBackEncoder().getCurrentPosition()));
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
 
-            otto.updateOdometry();
-            otto2.updateOdometry();
         }
     }}

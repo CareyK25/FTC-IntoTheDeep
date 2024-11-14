@@ -1,16 +1,18 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.deprecated;
 
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
 import org.firstinspires.ftc.teamcode.util.MathFunctions;
 
 public class RobotMovement {
+
     public static double[] goToPosition(double x, double y, double movementSpeed, double targetHeading, Pose robotPos, double turnSpeed) {
-        double absoluteAngleToTarget = Math.atan2(y- robotPos.getY(), x- robotPos.getX());// Global angle
-        double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
-        double dist = Math.sqrt(Math.pow(y- robotPos.getY(), 2) + Math.pow(x- robotPos.getX(), 2));//Math.hypot(y-GraphicsLineCircle.WorldPosY, x-GraphicsLineCircle.WorldPosX);
+        // Global angle
+//        double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
+//        double dist = Math.sqrt(Math.pow(y- robotPos.getY(), 2) + Math.pow(x- robotPos.getX(), 2));//Math.hypot(y-GraphicsLineCircle.WorldPosY, x-GraphicsLineCircle.WorldPosX);
         double deltaX = x- robotPos.getX();
         double deltaY = y- robotPos.getY();
+        double globalAngleToTarget = Math.atan2(deltaY, deltaX);
         Pair local = new Pair(deltaX, deltaY);
         local.rotate(-robotPos.getR()); //turns local axis into global axis
         double movementXPower = deltaX/(Math.abs(deltaX) + Math.abs(deltaY)); // Normalizes the movement Power
@@ -31,6 +33,7 @@ public class RobotMovement {
         System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
         return new double[]{dX, dY, deltaHeading};
     }
+
     public static double[] goToPosition(Pose targetPose, double movementSpeed, Pose robotPos) {
         double absoluteAngleToTarget = Math.atan2(targetPose.getY()- robotPos.getY(), targetPose.getX()- robotPos.getX());// Global angle
         double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
@@ -46,4 +49,6 @@ public class RobotMovement {
         //System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
         return new double[]{dX, dY, 0};
     }
+
+
 }

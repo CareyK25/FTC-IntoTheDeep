@@ -1,12 +1,11 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.deprecated;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.control.Odometry;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
 
 @Autonomous(name="Pure Pursuit Test", group="Linear OpMode")
@@ -19,10 +18,11 @@ public class PurePursuitTest extends LinearOpMode {
     private DcMotor rightBackDrive = null;
     Pose targetPose = new Pose(new double[]{25, 25, 0});
 
-    private IMU imu = null;
+
 
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
     private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
+    private PurePursuit percy = new PurePursuit(otto.getPose());
 
 
     @Override
@@ -33,7 +33,6 @@ public class PurePursuitTest extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
-        imu = hardwareMap.get(IMU.class, "imu");
         otto.setEncoders(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -48,12 +47,13 @@ public class PurePursuitTest extends LinearOpMode {
         runtime.reset();
 
         otto.resetEncoders();
-        imu.resetYaw();
+        percy.setTargetPose(new Pose(new double[]{25, 25, 0}));
 
         while (opModeIsActive()) {
+            otto.updateOdometry();
             double max;
 
-            double [] deltas = RobotMovement.goToPosition(targetPose, .5, otto.getPose());
+            double [] deltas = percy.goToPosition();
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = deltas[1];  // Note: pushing stick forward gives negative value
             double lateral =  deltas[0];
@@ -71,7 +71,6 @@ public class PurePursuitTest extends LinearOpMode {
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
-
             if (max > 1.0) {
                 leftFrontPower  /= max;
                 rightFrontPower /= max;
@@ -80,13 +79,13 @@ public class PurePursuitTest extends LinearOpMode {
             }
 
             // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
+            leftFrontDrive.setPower(leftFrontPower* 0.2);
+            rightFrontDrive.setPower(rightFrontPower* 0.2);
+            leftBackDrive.setPower(leftBackPower* 0.2);
+            rightBackDrive.setPower(rightBackPower* 0.2);
 
             // Show the elapsed game time and wheel power and odometry is in cm
-            telemetry.addData("IMURot", Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw()));
+
             telemetry.addData("PoseRot" , otto.getPose().getR());
 
             telemetry.addData("Pose" , otto.getPose());
@@ -98,7 +97,7 @@ public class PurePursuitTest extends LinearOpMode {
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
 
-            otto.updateOdometry();
+
         }
 
 

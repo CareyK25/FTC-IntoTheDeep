@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode;
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+package org.firstinspires.ftc.teamcode.control;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -11,6 +9,7 @@ import org.firstinspires.ftc.teamcode.datatypes.Pose;
 public class Odometry {
     private final Pose pose;
 
+    public static final double INIT_ROT = Math.PI/2;
 
     // unit conversion constants
     public static final int TPR = 2000; // ticks per revolution
@@ -36,14 +35,14 @@ public class Odometry {
         this.encoders = encoders;
         this.encoder_pos = new double[3];
         this.imu_rot = 0;
-        this.pose = new Pose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
+        this.pose = new Pose(new double[] {0, 0, INIT_ROT}); //starts at (0, 0) with heading 0
         this.imu = null;
     }
     public Odometry(DcMotor[] encoders, IMU imu) {
         this.encoders = encoders;
         this.encoder_pos = new double[3];
         this.imu_rot = 0;
-        this.pose = new Pose(new double[] {0, 0, 0}); //starts at (0, 0) with heading 0
+        this.pose = new Pose(new double[] {0, 0, INIT_ROT}); //starts at (0, 0) with heading 0
         this.imu = imu;
     }
 
@@ -77,8 +76,6 @@ public class Odometry {
 
 
 
-
-
     public void updateOdometry() {
         double[] encoder_delta = new double[encoders.length];
 
@@ -97,8 +94,9 @@ public class Odometry {
             phi = yaw - imu_rot;
             imu_rot = yaw;
         }
+
         double delta_middle = (encoder_delta[LEFT] + encoder_delta[RIGHT])/2;
-        double delta_perp = encoder_delta[BACK] - FORWARD_OFFSET * phi;
+        double delta_perp = (encoder_delta[BACK] - FORWARD_OFFSET * phi);
 
         double heading = pose.getR();
         Matrix rotation = new Matrix(new double[][]{

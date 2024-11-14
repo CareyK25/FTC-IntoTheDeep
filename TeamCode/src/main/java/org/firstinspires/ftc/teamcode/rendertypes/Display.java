@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.rendertypes;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
-import org.firstinspires.ftc.teamcode.rendertypes.Pixel;
 
 import java.util.ArrayList;
 
