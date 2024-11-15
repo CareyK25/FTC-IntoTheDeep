@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.lang.Math;
 
 
-@TeleOp(name="Andys_Op_Mode", group="Linear OpMode")
+@TeleOp(name="Andys2_Op_Mode", group="Linear OpMode")
 
 
 public class TeLeOp_Odometry extends LinearOpMode {
