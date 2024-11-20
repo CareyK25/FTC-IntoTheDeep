@@ -13,7 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.lang.Math;
-
+import com.qualcomm.robotcore.hardware.Servo;//andy lau add :)
+import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Andys_Op_Mode", group="Linear OpMode")
 
@@ -22,6 +23,8 @@ public class Andys_Op_Mode extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor[] motors = new DcMotor[4];
+    private Servo myServo, intake;//andy lau add :)
+    private boolean check = false;
 
     @Override
     public void runOpMode() {
@@ -38,6 +41,10 @@ public class Andys_Op_Mode extends LinearOpMode {
         motors[FRONT_RIGHT].setDirection(DcMotor.Direction.REVERSE);
         motors[BACK_RIGHT].setDirection(DcMotor.Direction.FORWARD);
 
+        myServo = hardwareMap.get(Servo.class, "deposit1");//andy lau add :)
+        intake = hardwareMap.get(Servo.class, "intake");
+
+
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -48,9 +55,9 @@ public class Andys_Op_Mode extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y + (-gamepad2.left_stick_y);  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x + gamepad2.left_stick_x;
-            double yaw     =  (-gamepad1.right_stick_x) + (-gamepad2.right_stick_x);
+            double axial   = 0;//-gamepad1.left_stick_y + (-gamepad2.left_stick_y);  // Note: pushing stick forward gives negative value
+            double lateral = 0;// gamepad1.left_stick_x + gamepad2.left_stick_x;
+            double yaw     =  0;//(-gamepad1.right_stick_x) + (-gamepad2.right_stick_x);
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -77,9 +84,32 @@ public class Andys_Op_Mode extends LinearOpMode {
             motors[BACK_LEFT].setPower(leftBackPower);
             motors[BACK_RIGHT].setPower(rightBackPower);
 
+            if (gamepad1.a) {//andy lau add :)
+                myServo.setPosition(1.0); // Move servo to one position//andy lau add :)
+            } else if (gamepad1.b) {//andy lau add :)
+                myServo.setPosition(0.0); // Move servo to another position//andy lau add :)
+            }//jeremery add :)
+            if (gamepad1.dpad_right && !check) {//jeremery add :)
+                intake.setPosition(Range.clip(intake.getPosition()+.1, 0, 1));;//jeremery add :)
+                //check = true;
+            }//jeremery add :)
+            else if (gamepad1.dpad_left && !check) {//jeremery add :)
+                intake.setPosition(Range.clip(intake.getPosition()-.1, 0, 1));//jeremery add :)
+                //check = true;
+            }
+            else if (!gamepad1.dpad_right && !gamepad1.dpad_left){
+                //check = false;
+            }
+            //intake.setPosition(gamepad1.left_stick_x);
+
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Servo Position", myServo.getPosition());//andy lau add :)
+            telemetry.addData("Slide Servo Pos", intake.getPosition());
+            telemetry.addData("Check", check);
+            telemetry.addData("Servo", intake.toString());
+
             telemetry.update();
 
         }
