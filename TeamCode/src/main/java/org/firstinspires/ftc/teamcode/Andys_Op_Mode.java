@@ -16,13 +16,18 @@ import java.lang.Math;
 import com.qualcomm.robotcore.hardware.Servo;//andy lau add :)
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.util.HardwareMapper;
+
 @TeleOp(name="Andys_Op_Mode", group="Linear OpMode")
 
 
 public class Andys_Op_Mode extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor[] motors = new DcMotor[4];
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
     private Servo myServo, intake;//andy lau add :)
     private boolean check = false;
 
@@ -31,16 +36,15 @@ public class Andys_Op_Mode extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        motors[FRONT_LEFT]  = hardwareMap.get(DcMotor.class, "frontLeft");
-        motors[BACK_LEFT]  = hardwareMap.get(DcMotor.class, "backLeft");
-        motors[FRONT_RIGHT] = hardwareMap.get(DcMotor.class, "frontRight");
-        motors[BACK_RIGHT] = hardwareMap.get(DcMotor.class, "backRight");
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "frontLeft");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
 
-        motors[FRONT_LEFT].setDirection(DcMotor.Direction.FORWARD);
-        motors[BACK_LEFT].setDirection(DcMotor.Direction.REVERSE);
-        motors[FRONT_RIGHT].setDirection(DcMotor.Direction.REVERSE);
-        motors[BACK_RIGHT].setDirection(DcMotor.Direction.FORWARD);
-
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
         myServo = hardwareMap.get(Servo.class, "deposit1");//andy lau add :)
         intake = hardwareMap.get(Servo.class, "intake");
 
@@ -79,27 +83,14 @@ public class Andys_Op_Mode extends LinearOpMode {
             }
 
             // Send calculated power to wheels
-            motors[FRONT_LEFT].setPower(leftFrontPower);
-            motors[FRONT_RIGHT].setPower(rightFrontPower);
-            motors[BACK_LEFT].setPower(leftBackPower);
-            motors[BACK_RIGHT].setPower(rightBackPower);
+            // andy lau
 
             if (gamepad1.a) {//andy lau add :)
-                myServo.setPosition(1.0); // Move servo to one position//andy lau add :)
+                intake.setPosition(Range.clip(intake.getPosition()+.01, .465, .70)); // Move servo to one position//andy lau add :)
             } else if (gamepad1.b) {//andy lau add :)
-                myServo.setPosition(0.0); // Move servo to another position//andy lau add :)
+                intake.setPosition(Range.clip(intake.getPosition()-.01, .465, .70)); // Move servo to another position//andy lau add :)
             }//jeremery add :)
-            if (gamepad1.dpad_right && !check) {//jeremery add :)
-                intake.setPosition(Range.clip(intake.getPosition()+.1, 0, 1));;//jeremery add :)
-                //check = true;
-            }//jeremery add :)
-            else if (gamepad1.dpad_left && !check) {//jeremery add :)
-                intake.setPosition(Range.clip(intake.getPosition()-.1, 0, 1));//jeremery add :)
-                //check = true;
-            }
-            else if (!gamepad1.dpad_right && !gamepad1.dpad_left){
-                //check = false;
-            }
+
             //intake.setPosition(gamepad1.left_stick_x);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -107,6 +98,8 @@ public class Andys_Op_Mode extends LinearOpMode {
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.addData("Servo Position", myServo.getPosition());//andy lau add :)
             telemetry.addData("Slide Servo Pos", intake.getPosition());
+            telemetry.addData("A:", gamepad1.a);
+            telemetry.addData("B:", gamepad1.b);
             telemetry.addData("Check", check);
             telemetry.addData("Servo", intake.toString());
 
