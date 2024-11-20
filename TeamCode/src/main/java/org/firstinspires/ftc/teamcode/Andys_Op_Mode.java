@@ -31,8 +31,8 @@ public class Andys_Op_Mode extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        motors[FRONT_LEFT] = hardwareMap.get(DcMotor.class, "frontLeft");
-        motors[BACK_LEFT] = hardwareMap.get(DcMotor.class, "backLeft");
+        motors[FRONT_LEFT]  = hardwareMap.get(DcMotor.class, "frontLeft");
+        motors[BACK_LEFT]  = hardwareMap.get(DcMotor.class, "backLeft");
         motors[FRONT_RIGHT] = hardwareMap.get(DcMotor.class, "frontRight");
         motors[BACK_RIGHT] = hardwareMap.get(DcMotor.class, "backRight");
 
@@ -55,16 +55,16 @@ public class Andys_Op_Mode extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = 0;//-gamepad1.left_stick_y + (-gamepad2.left_stick_y);  // Note: pushing stick forward gives negative value
+            double axial   = 0;//-gamepad1.left_stick_y + (-gamepad2.left_stick_y);  // Note: pushing stick forward gives negative value
             double lateral = 0;// gamepad1.left_stick_x + gamepad2.left_stick_x;
-            double yaw = 0;//(-gamepad1.right_stick_x) + (-gamepad2.right_stick_x);
+            double yaw     =  0;//(-gamepad1.right_stick_x) + (-gamepad2.right_stick_x);
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower = axial + lateral + yaw;
+            double leftFrontPower  = axial + lateral + yaw;
             double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower = axial - lateral + yaw;
-            double rightBackPower = axial + lateral - yaw;
+            double leftBackPower   = axial - lateral + yaw;
+            double rightBackPower  = axial + lateral - yaw;
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -72,10 +72,10 @@ public class Andys_Op_Mode extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower /= max;
+                leftFrontPower  /= max;
                 rightFrontPower /= max;
-                leftBackPower /= max;
-                rightBackPower /= max;
+                leftBackPower   /= max;
+                rightBackPower  /= max;
             }
 
             // Send calculated power to wheels
@@ -85,29 +85,32 @@ public class Andys_Op_Mode extends LinearOpMode {
             motors[BACK_RIGHT].setPower(rightBackPower);
 
             if (gamepad1.a) {//andy lau add :)
-                intake.setPosition(intake.getPosition()-.005); // Move servo to one position//andy lau add :)
-//            } else if (gamepad1.b) {//andy lau add :)
-//                myServo.setPosition(0.0); // Move servo to another position//andy lau add :)
-//            }//jeremery add :)
-//            int right = 0;
-//            int left = 0;
-                //jeremery add :)
+                myServo.setPosition(1.0); // Move servo to one position//andy lau add :)
             } else if (gamepad1.b) {//andy lau add :)
-                intake.setPosition(intake.getPosition()+.005); // Move servo to another position//andy lau add :)
+                myServo.setPosition(0.0); // Move servo to another position//andy lau add :)
+            }//jeremery add :)
+            if (gamepad1.dpad_right && !check) {//jeremery add :)
+                intake.setPosition(Range.clip(intake.getPosition()+.1, 0, 1));;//jeremery add :)
+                //check = true;
+            }//jeremery add :)
+            else if (gamepad1.dpad_left && !check) {//jeremery add :)
+                intake.setPosition(Range.clip(intake.getPosition()-.1, 0, 1));//jeremery add :)
+                //check = true;
             }
-
-                //intake.setPosition(gamepad1.left_stick_x);
-
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-                telemetry.addData("Servo Position", myServo.getPosition());//andy lau add :)
-                telemetry.addData("Slide Servo Pos", intake.getPosition());
-                telemetry.addData("Check", check);
-                telemetry.addData("Servo", intake.toString());
-
-                telemetry.update();
-
+            else if (!gamepad1.dpad_right && !gamepad1.dpad_left){
+                //check = false;
             }
+            //intake.setPosition(gamepad1.left_stick_x);
+
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Servo Position", myServo.getPosition());//andy lau add :)
+            telemetry.addData("Slide Servo Pos", intake.getPosition());
+            telemetry.addData("Check", check);
+            telemetry.addData("Servo", intake.toString());
+
+            telemetry.update();
+
         }
-    }
+    }}

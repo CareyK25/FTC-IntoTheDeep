@@ -62,7 +62,7 @@ public class Display {
         }
     }
 
-    public String monoify(char c) {
+    public String monoify(char c) { // buffers the width of the characters to make it mono relative to line height of driver hub
         switch (c) {
             case ' ':
                 return "   ";

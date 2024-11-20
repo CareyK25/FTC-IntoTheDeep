@@ -13,14 +13,11 @@ public class Movement {
 
     private DcMotor[] motors;
     private Pose deltaPose;
-
-
-
-    public void setDeltaPose(Pose deltaPose) {
-        this.deltaPose = deltaPose;
+    public Movement(DcMotor[] motors) {
+        this.motors = motors;
     }
-    public void update() {
-        //treat the mvoement vector as a controller input
+
+    public void move(Pose deltaPose) {
         double axial = deltaPose.getY();  // Note: pushing stick forward gives negative value
         double lateral =  deltaPose.getX();
         double yaw =  deltaPose.getR();
@@ -44,15 +41,9 @@ public class Movement {
                 powers[i] /= max;
             }
         }
-
         // set motor powers
         for (int i = 0; i<powers.length; i++)  {
             motors[i].setPower(powers[i]);
         }
-
-
-
-
     }
-
 }
