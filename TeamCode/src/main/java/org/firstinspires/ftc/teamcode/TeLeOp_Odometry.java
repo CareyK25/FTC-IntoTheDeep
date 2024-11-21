@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.util.HardwareMapper;
 
 @TeleOp(name="TeLeOp_Odometry", group="Linear OpMode")
 public class TeLeOp_Odometry extends LinearOpMode {
-    private DcMotor[] motors = HardwareMapper.getMotors();
+    private DcMotor[] motors = HardwareMapper.getMotors(hardwareMap);
     private Movement movement = new Movement(motors);
 
     @Override
