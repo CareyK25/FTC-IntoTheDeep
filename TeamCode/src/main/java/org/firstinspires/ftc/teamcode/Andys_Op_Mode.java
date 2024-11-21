@@ -84,13 +84,16 @@ public class Andys_Op_Mode extends LinearOpMode {
 
             // Send calculated power to wheels
             // andy lau
+            //jeremery add
 
-            if (gamepad1.a) {//andy lau add :)
-                intake.setPosition(Range.clip(intake.getPosition()+.01, .465, .70)); // Move servo to one position//andy lau add :)
-            } else if (gamepad1.b) {//andy lau add :)
-                intake.setPosition(Range.clip(intake.getPosition()-.01, .465, .70)); // Move servo to another position//andy lau add :)
-            }//jeremery add :)
-
+            if (gamepad1.a) {
+                // Move servo to one position,added limits in order to stop servo from over extending, setting a range
+                intake.setPosition(Range.clip(intake.getPosition()+.01, .465, .70));
+            } else if (gamepad1.b) {
+                // Move servo to another position, added limits in order to stop servo from over extending
+                intake.setPosition(Range.clip(intake.getPosition()-.01, .465, .70));
+            }
+            
             //intake.setPosition(gamepad1.left_stick_x);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
