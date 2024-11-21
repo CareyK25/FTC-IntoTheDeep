@@ -8,9 +8,10 @@ import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_LEFT;
 import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_RIGHT;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class HardwareMapper {
-    public static DcMotor[] getMotors() {
+    public static DcMotor[] getMotors(HardwareMap hardwareMap) {
         DcMotor[] motors = new DcMotor[4];
         motors[FRONT_LEFT]  = hardwareMap.get(DcMotor.class, "frontLeft");
         motors[BACK_LEFT]  = hardwareMap.get(DcMotor.class, "backLeft");

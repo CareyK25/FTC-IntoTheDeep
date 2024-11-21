@@ -26,7 +26,7 @@ public class Test_Op_Mode extends LinearOpMode {
     public void runOpMode() {
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        motors = HardwareMapper.getMotors();
+        motors = HardwareMapper.getMotors(hardwareMap);
         myServo = hardwareMap.get(Servo.class, "deposit1");//andy lau add :)
         intake = hardwareMap.get(Servo.class, "intake");
 
