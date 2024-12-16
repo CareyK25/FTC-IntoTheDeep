@@ -22,7 +22,7 @@ public class PurePursuitTest extends LinearOpMode {
 
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
     private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
-    private PurePursuit percy = new PurePursuit(otto.getPose());
+    private RobotMovement percy = new RobotMovement();
 
 
     @Override
@@ -47,13 +47,13 @@ public class PurePursuitTest extends LinearOpMode {
         runtime.reset();
 
         otto.resetEncoders();
-        percy.setTargetPose(new Pose(new double[]{25, 25, 0}));
+        //percy.setTargetPose(new Pose(new double[]{25, 25, 0}));
 
         while (opModeIsActive()) {
             otto.updateOdometry();
             double max;
 
-            double [] deltas = percy.goToPosition();
+            double [] deltas = percy.goToPosition(targetPose, otto.getPose(), 1);
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = deltas[1];  // Note: pushing stick forward gives negative value
             double lateral =  deltas[0];
