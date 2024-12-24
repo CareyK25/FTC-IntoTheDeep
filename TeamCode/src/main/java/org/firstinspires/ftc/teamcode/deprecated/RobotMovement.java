@@ -21,8 +21,8 @@ public class RobotMovement {
         double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);
         Pair local = new Pair(deltaX, deltaY);
         local.rotate(absoluteAngleToTarget-robotPose.getR()+(Math.PI/2)); //turns local axis into global axis
-        double movementXPower = deltaX/dist; // Normalizes the movement Power
-        double movementYPower = deltaY/dist;
+        double movementXPower = local.getX()/dist; // Normalizes the movement Power
+        double movementYPower = local.getY()/dist;
         double dX = movementXPower*movementSpeed;
         double dY = movementYPower*movementSpeed;
         System.out.println("target angle: " + targetPose.getR() + " World Heading: " + robotPose.getR());
@@ -31,10 +31,10 @@ public class RobotMovement {
         //GraphicsLineCircle.deltaHeading = ((deltaAngle/Math.PI)*turnSpeed*180)/((Math.abs(deltaX) + Math.abs(deltaY)));
         double deltaHeading = ((deltaAngle/(Math.PI))*turnSpeed);
         if (deltaAngle > 0) {
-            deltaHeading = Math.max(deltaHeading, 0.4);
+            deltaHeading = Math.max(deltaHeading, 1);
         }
-        else {
-            deltaHeading = Math.min(deltaHeading, 0);
+        else if (deltaHeading<0){
+            deltaHeading = Math.min(deltaHeading, -1);
         }
         System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
         return new double[]{dX, dY, deltaHeading};
