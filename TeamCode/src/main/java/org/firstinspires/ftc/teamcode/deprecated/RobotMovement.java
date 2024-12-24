@@ -157,10 +157,19 @@ public class RobotMovement {
     }
     public static CurvePoint followCurve(ArrayList<CurvePoint> allPoints, Pose robotPose) { // can be void return type
         CurvePoint followMe = getFollowPointPath(allPoints, robotPose, allPoints.get(0).getFollowDistance());
-        if (lastFoundIndex != allPoints.size()-1 || MathFunctions.distance(robotPose.getPoint(), allPoints.get(allPoints.size()-1).toPoint()) >.6 || MathFunctions.angleWrap(allPoints.get(lastFoundIndex == allPoints.size()-1? allPoints.size()-1:lastFoundIndex+1).getTargetHeading()-Math.toRadians(robotPose.getR()))>Math.toRadians(2)) {
-            goToPosition(followMe.toPose(), robotPose, 1);
+        if (lastFoundIndex != allPoints.size()-1 || MathFunctions.distance(robotPose.getPoint(), allPoints.get(allPoints.size()-1).toPoint()) >.6 || Math.abs(MathFunctions.angleWrap(allPoints.get(lastFoundIndex == allPoints.size()-1? allPoints.size()-1:lastFoundIndex+1).getTargetHeading()-robotPose.getR()))>Math.toRadians(2)) {
+            goToPosition(followMe.toPose(), robotPose, allPoints.get(lastFoundIndex+1).getMoveSpeed());
         }
         return followMe;
+    }
+    public static void move(ArrayList<CurvePoint> allPoints, Pose robotPose) {
+        if (MathFunctions.distance(new Point(robotPose.getX(), robotPose.getY()), allPoints.get(lastFoundIndex+1).toPoint()) >.6 || Math.abs(MathFunctions.angleWrap(allPoints.get(lastFoundIndex+1).getTargetHeading()-robotPose.getR()))>Math.toRadians(2)) {
+            goToPosition(allPoints.get(lastFoundIndex+1).toPose(), robotPose, allPoints.get(lastFoundIndex+1).getMoveSpeed(), allPoints.get(lastFoundIndex+1).getTurnSpeed());
+            //System.out.println("Last Index: " + lastFoundIndex);
+        }
+        else if (lastFoundIndex != allPoints.size()-2) {
+            lastFoundIndex++;
+        }
     }
 
 }

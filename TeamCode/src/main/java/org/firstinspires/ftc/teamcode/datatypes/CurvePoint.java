@@ -42,4 +42,10 @@ public class CurvePoint {
     public double getTargetHeading() {
         return targetHeading;
     }
+    public double getMoveSpeed() {
+        return moveSpeed;
+    }
+    public double getTurnSpeed() {
+        return turnSpeed;
+    }
 }
