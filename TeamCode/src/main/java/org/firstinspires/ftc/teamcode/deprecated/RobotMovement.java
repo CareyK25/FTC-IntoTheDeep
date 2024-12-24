@@ -21,10 +21,13 @@ public class RobotMovement {
         double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);
         Pair local = new Pair(deltaX, deltaY);
         local.rotate(absoluteAngleToTarget-robotPose.getR()+(Math.PI/2)); //turns local axis into global axis
-        double movementXPower = local.getX()/dist; // Normalizes the movement Power
-        double movementYPower = local.getY()/dist;
-        double dX = movementXPower*movementSpeed;
-        double dY = movementYPower*movementSpeed;
+        double dX = 0,dY = 0;
+        if (dist != 0) {
+            double movementXPower = local.getX()/dist; // Normalizes the movement Power
+            double movementYPower = local.getY()/dist;
+            dX = movementXPower*movementSpeed;
+            dY = movementYPower*movementSpeed;
+        }
         System.out.println("target angle: " + targetPose.getR() + " World Heading: " + robotPose.getR());
         double deltaAngle = MathFunctions.angleWrap(targetPose.getR()-robotPose.getR());
         System.out.println("Delta angle: " + deltaAngle);
@@ -49,10 +52,13 @@ public class RobotMovement {
         Pair local = new Pair(deltaX, deltaY);
         //local.rotate(-robotPose.getR()); //turns local axis into global axis
         local.rotate(absoluteAngleToTarget-robotPose.getR()+(Math.PI/2));
-        double movementXPower = local.getX()/distance; // Normalizes the movement Power
-        double movementYPower = local.getY()/distance;
-        double dX = movementXPower*movementSpeed;
-        double dY = movementYPower*movementSpeed;
+        double dX = 0, dY = 0;
+        if (distance != 0) {
+            double movementXPower = local.getX()/distance; // Normalizes the movement Power
+            double movementYPower = local.getY()/distance;
+            dX = movementXPower*movementSpeed;
+            dY = movementYPower*movementSpeed;
+        }
         //System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
         return new double[]{dX, dY, 0};
     }
