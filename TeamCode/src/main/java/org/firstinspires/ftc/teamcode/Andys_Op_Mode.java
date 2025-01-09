@@ -24,10 +24,7 @@ import org.firstinspires.ftc.teamcode.util.HardwareMapper;
 public class Andys_Op_Mode extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
+    private DcMotor[] motors;
     private Servo myServo, intake;//andy lau add :)
     private boolean check = false;
 
@@ -36,15 +33,7 @@ public class Andys_Op_Mode extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "frontLeft");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
-
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        motors = HardwareMapper.getMotors(hardwareMap);
         myServo = hardwareMap.get(Servo.class, "deposit1");//andy lau add :)
         intake = hardwareMap.get(Servo.class, "intake");
 
@@ -69,6 +58,7 @@ public class Andys_Op_Mode extends LinearOpMode {
             double rightFrontPower = axial - lateral - yaw;
             double leftBackPower   = axial - lateral + yaw;
             double rightBackPower  = axial + lateral - yaw;
+
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -82,9 +72,7 @@ public class Andys_Op_Mode extends LinearOpMode {
                 rightBackPower  /= max;
             }
 
-            // Send calculated power to wheels
-            // andy lau
-            //jeremery add
+
 
             if (gamepad1.a) {
                 // Move servo to one position,added limits in order to stop servo from over extending, setting a range
