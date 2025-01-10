@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.datatypes;
 
+import androidx.annotation.NonNull;
+
 public class Pair {
     public double x, y;
 
@@ -63,8 +65,20 @@ public class Pair {
         return getRasterized(dim.getY(), dim.getX());
     }
 
+    public double distance(Pair p) {
+        return Math.sqrt((Math.pow(this.x - p.getX(), 2) + Math.pow(this.y - p.getY(), 2)));
+    }
+
     public Pair copy() {
         return new Pair(x, y);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+
+        return "X: " + String.format("%.2f", this.getX()) +
+                " Y: " + String.format("%.2f", this.getY());
     }
 
 }
