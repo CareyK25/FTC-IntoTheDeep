@@ -22,8 +22,9 @@ public class Odometry {
 
     // used to grab encoders from the array with more readablility
     public static final int LEFT = 0;
-    public static final int RIGHT = 1;
-    public static final int BACK = 2;
+    public static final int BACK = 1;
+    public static final int RIGHT = 2;
+
     private DcMotor[] encoders;
     private IMU imu;
 
@@ -88,8 +89,8 @@ public class Odometry {
 
         // calculate delta for all encoder positions
         for (int i = 0; i<encoders.length; i++) {
-            double current_pos = ticksToCm(encoders[i].getCurrentPosition()) // use CM as units
-                    * (i == RIGHT ? -1:1); //invert right deadwheel
+            double current_pos = ticksToCm(encoders[i].getCurrentPosition()); // use CM as units
+                    //* (i == RIGHT ? -1:1); //invert right deadwheel
 
             encoder_delta[i] = current_pos - encoder_pos[i];
             encoder_pos[i] = current_pos;
@@ -127,7 +128,6 @@ public class Odometry {
                 rotation.multiply(local_delta);
 
         pose.add(pose_delta);
-
 
     }
 }

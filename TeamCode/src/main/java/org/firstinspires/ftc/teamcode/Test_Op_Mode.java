@@ -1,6 +1,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.util.Constants.BACK_LEFT;
+import static org.firstinspires.ftc.teamcode.util.Constants.BACK_RIGHT;
+import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_LEFT;
+import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_RIGHT;
+
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -229,16 +234,10 @@ public class Test_Op_Mode extends LinearOpMode {
         double max;
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-        double axial   = gamepad1.left_stick_y + (gamepad2.left_stick_y);  // Note: pushing stick forward gives negative value
-        double lateral = (gamepad1.right_stick_x) + (gamepad2.right_stick_x);
-        double yaw     = -gamepad1.left_stick_x + (-gamepad2.left_stick_x);
+        double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+        double lateral =  gamepad1.left_stick_x;
+        double yaw     =  gamepad1.right_stick_x;
 
-        if (axial * 0.1 > lateral) {
-            lateral = 0;
-        }
-        if (lateral * 0.1 > axial) {
-            axial = 0;
-        }
         // Combine the joystick requests for each axis-motion to determine each wheel's power.
         // Set up a variable for each drive wheel to save the power level for telemetry.
         double leftFrontPower  = axial + lateral + yaw;
@@ -252,8 +251,6 @@ public class Test_Op_Mode extends LinearOpMode {
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
 
-
-
         if (max > 1.0) {
             leftFrontPower  /= max;
             rightFrontPower /= max;
@@ -261,11 +258,11 @@ public class Test_Op_Mode extends LinearOpMode {
             rightBackPower  /= max;
         }
 
+
         // Send calculated power to wheels
         motors[3].setPower(leftFrontPower*gowthams_speed_hehe);
         motors[2].setPower(rightFrontPower*gowthams_speed_hehe);
         motors[1].setPower(leftBackPower*gowthams_speed_hehe);
         motors[0].setPower(rightBackPower*gowthams_speed_hehe);
-
     }
 }

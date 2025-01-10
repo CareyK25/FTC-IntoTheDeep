@@ -22,7 +22,7 @@ public class HardwareMapper {
         // preconfigure the motor directions
         motors[FRONT_LEFT].setDirection(DcMotor.Direction.REVERSE);
         motors[BACK_LEFT].setDirection(DcMotor.Direction.REVERSE);
-        motors[FRONT_RIGHT].setDirection(DcMotor.Direction.REVERSE);
+        motors[FRONT_RIGHT].setDirection(DcMotor.Direction.FORWARD);
         motors[BACK_RIGHT].setDirection(DcMotor.Direction.FORWARD);
         return motors;
     }
