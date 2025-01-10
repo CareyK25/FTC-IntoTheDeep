@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import org.firstinspires.ftc.teamcode.datatypes.Pair;
+import org.firstinspires.ftc.teamcode.datatypes.Point;
+
 public class MathFunctions {
     public static double angleWrap(double angle) {
         while (angle > Math.PI) {
@@ -18,5 +21,8 @@ public class MathFunctions {
             return low/10;
         }
         return val/10;
+    }
+    public static double distance(Point p1, Point p2) {
+        return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY()-p2.getY(), 2));
     }
 }

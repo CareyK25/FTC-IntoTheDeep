@@ -76,10 +76,12 @@ public class Andys_Op_Mode extends LinearOpMode {
 
             if (gamepad1.a) {
                 // Move servo to one position,added limits in order to stop servo from over extending, setting a range
-                intake.setPosition(Range.clip(intake.getPosition()+.01, .465, .70));
+                //intake
+                intake.setPosition(0.58);
             } else if (gamepad1.b) {
                 // Move servo to another position, added limits in order to stop servo from over extending
-                intake.setPosition(Range.clip(intake.getPosition()-.01, .465, .70));
+                //retract
+                intake.setPosition(0.43);
             }
             
             //intake.setPosition(gamepad1.left_stick_x);

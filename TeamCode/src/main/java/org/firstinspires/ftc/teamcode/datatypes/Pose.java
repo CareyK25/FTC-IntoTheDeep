@@ -36,6 +36,9 @@ public class Pose {
     public void setPose(double[] pose) {
         this.pose = pose;
     }
+    public Point getPoint() {
+        return new Point(pose[0], pose[1]);
+    }
 
     public void setR(double rot) {
         this.pose[2] = rot;
