@@ -51,7 +51,7 @@ public class RobotMovement {
         double distance = MathFunctions.distance(new Point(targetPose.getX(), targetPose.getY()), new Point(robotPose.getX(), robotPose.getY()));
         Pair local = new Pair(deltaX, deltaY);
         //local.rotate(-robotPose.getR()); //turns local axis into global axis
-        local.rotate(absoluteAngleToTarget-robotPose.getR()+(Math.PI/2));
+        local.rotate(absoluteAngleToTarget-robotPose.getR());
         double dX = 0, dY = 0;
         if (distance != 0) {
             double movementXPower = local.getX()/distance; // Normalizes the movement Power
