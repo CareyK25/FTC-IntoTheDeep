@@ -19,12 +19,10 @@ public class RobotMovement {
         double deltaY = targetPose.getY() - robotPose.getY();
         double dist = Math.sqrt(Math.pow(deltaY, 2) + Math.pow(deltaX, 2));
         double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);
-        Pair local = new Pair(deltaX, deltaY);
-        local.rotate(absoluteAngleToTarget-robotPose.getR()+(Math.PI/2)); //turns local axis into global axis
         double dX = 0,dY = 0;
         if (dist != 0) {
-            double movementXPower = local.getX()/dist; // Normalizes the movement Power
-            double movementYPower = local.getY()/dist;
+            double movementXPower = deltaX/dist; // Normalizes the movement Power
+            double movementYPower = deltaY/dist;
             dX = movementXPower*movementSpeed;
             dY = movementYPower*movementSpeed;
         }
@@ -49,13 +47,10 @@ public class RobotMovement {
         double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);// Global angle
         //double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
         double distance = MathFunctions.distance(new Point(targetPose.getX(), targetPose.getY()), new Point(robotPose.getX(), robotPose.getY()));
-        Pair local = new Pair(deltaX, deltaY);
-        //local.rotate(-robotPose.getR()); //turns local axis into global axis
-        local.rotate(absoluteAngleToTarget-robotPose.getR());
         double dX = 0, dY = 0;
         if (distance != 0) {
-            double movementXPower = local.getX()/distance; // Normalizes the movement Power
-            double movementYPower = local.getY()/distance;
+            double movementXPower = deltaX/distance; // Normalizes the movement Power
+            double movementYPower = deltaY/distance;
             dX = movementXPower*movementSpeed;
             dY = movementYPower*movementSpeed;
         }

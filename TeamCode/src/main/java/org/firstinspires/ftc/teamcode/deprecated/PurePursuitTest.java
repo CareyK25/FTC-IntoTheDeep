@@ -16,7 +16,7 @@ public class PurePursuitTest extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    Pose targetPose = new Pose(new double[]{25, 25, 0});
+    Pose targetPose = new Pose(new double[]{20, 20, 0});
 
 
 
