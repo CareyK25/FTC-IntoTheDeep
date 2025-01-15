@@ -50,7 +50,7 @@ public class PurePursuitTest extends LinearOpMode {
         //percy.setTargetPose(new Pose(new double[]{25, 25, 0}));
 
         while (opModeIsActive()) {
-            otto.updateOdometry();
+
             double max;
 
             double [] deltas = percy.goToPosition(targetPose, otto.getPose(), 1);
@@ -86,6 +86,7 @@ public class PurePursuitTest extends LinearOpMode {
 
             // Show the elapsed game time and wheel power and odometry is in cm
 
+            otto.updateOdometry();
             telemetry.addData("PoseRot" , otto.getPose().getR());
 
             telemetry.addData("Pose" , otto.getPose());
@@ -96,6 +97,7 @@ public class PurePursuitTest extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
+
 
 
         }
