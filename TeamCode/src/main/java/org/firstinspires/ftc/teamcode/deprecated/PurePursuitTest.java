@@ -21,7 +21,7 @@ public class PurePursuitTest extends LinearOpMode {
 
 
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
-    private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
+    private Odometry otto;
     private RobotMovement percy = new RobotMovement();
 
 
@@ -33,7 +33,6 @@ public class PurePursuitTest extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
-        otto.setEncoders(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
