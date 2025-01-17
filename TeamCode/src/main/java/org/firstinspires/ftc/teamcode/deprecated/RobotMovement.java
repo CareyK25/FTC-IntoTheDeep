@@ -43,7 +43,6 @@ public class RobotMovement {
 
     public static double[] goToPosition(Pose targetPose, Pose robotPose, double movementSpeed) {
         double deltaX = targetPose.getX() - robotPose.getX();
-
         double deltaY = targetPose.getY() - robotPose.getY();
         double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);// Global angle
         //double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
