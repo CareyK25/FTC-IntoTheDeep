@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_LEFT;
 import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_RIGHT;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class HardwareMapper {
@@ -19,9 +20,9 @@ public class HardwareMapper {
         motors[BACK_RIGHT] = hardwareMap.get(DcMotor.class, "backRight");
 
         // preconfigure the motor directions
-        motors[FRONT_LEFT].setDirection(DcMotor.Direction.FORWARD);
+        motors[FRONT_LEFT].setDirection(DcMotor.Direction.REVERSE);
         motors[BACK_LEFT].setDirection(DcMotor.Direction.REVERSE);
-        motors[FRONT_RIGHT].setDirection(DcMotor.Direction.REVERSE);
+        motors[FRONT_RIGHT].setDirection(DcMotor.Direction.FORWARD);
         motors[BACK_RIGHT].setDirection(DcMotor.Direction.FORWARD);
         return motors;
     }

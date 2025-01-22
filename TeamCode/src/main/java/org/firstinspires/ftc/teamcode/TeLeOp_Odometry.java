@@ -21,5 +21,8 @@ public class TeLeOp_Odometry extends LinearOpMode {
         while (opModeIsActive()) { // THIS IS THE MAIN LOOP
             Pose delta = new Pose(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             movement.move(delta);
+
+
+
         }
     }}

@@ -16,13 +16,13 @@ public class PurePursuitTest extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    Pose targetPose = new Pose(new double[]{25, 25, 0});
+    Pose targetPose = new Pose(new double[]{20, 20, 0});
 
 
 
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
-    private Odometry otto = new Odometry(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
-    private PurePursuit percy = new PurePursuit(otto.getPose());
+    private Odometry otto;
+    private RobotMovement percy = new RobotMovement();
 
 
     @Override
@@ -33,7 +33,6 @@ public class PurePursuitTest extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
-        otto.setEncoders(new DcMotor[]{leftBackDrive, rightFrontDrive, leftFrontDrive});
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -47,13 +46,13 @@ public class PurePursuitTest extends LinearOpMode {
         runtime.reset();
 
         otto.resetEncoders();
-        percy.setTargetPose(new Pose(new double[]{25, 25, 0}));
+        //percy.setTargetPose(new Pose(new double[]{25, 25, 0}));
 
         while (opModeIsActive()) {
-            otto.updateOdometry();
+
             double max;
 
-            double [] deltas = percy.goToPosition();
+            double [] deltas = percy.goToPosition(targetPose, otto.getPose(), 1);
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = deltas[1];  // Note: pushing stick forward gives negative value
             double lateral =  deltas[0];
@@ -86,6 +85,7 @@ public class PurePursuitTest extends LinearOpMode {
 
             // Show the elapsed game time and wheel power and odometry is in cm
 
+            otto.updateOdometry();
             telemetry.addData("PoseRot" , otto.getPose().getR());
 
             telemetry.addData("Pose" , otto.getPose());
@@ -96,6 +96,7 @@ public class PurePursuitTest extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
+
 
 
         }

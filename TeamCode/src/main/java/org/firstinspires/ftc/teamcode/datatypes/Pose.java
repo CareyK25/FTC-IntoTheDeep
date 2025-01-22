@@ -9,6 +9,13 @@ public class Pose {
     public Pose(double[] pose) {
         this.pose = pose;
     }
+
+    public Pose(Pair pair, double r) {
+        this.pose = new double[3];
+        this.pose[0] = pair.getX();
+        this.pose[1] = pair.getY();
+        this.pose[2] = r;
+    }
     public Pose(double x, double y, double r) {
         this.pose = new double[] {x, y, r};
     }
@@ -28,6 +35,9 @@ public class Pose {
 
     public void setPose(double[] pose) {
         this.pose = pose;
+    }
+    public Point getPoint() {
+        return new Point(pose[0], pose[1]);
     }
 
     public void setR(double rot) {
@@ -54,7 +64,10 @@ public class Pose {
     @NonNull
     @Override
     public String toString() {
-        return "X: " + this.getX() + " Y: " + this.getY() + " Heading: " + this.getR();
+
+        return "X: " + String.format("%.2f", this.getX()) +
+                " Y: " + String.format("%.2f", this.getY()) +
+                " Heading: " + String.format("%.2f", this.getR());
     }
 
 }
