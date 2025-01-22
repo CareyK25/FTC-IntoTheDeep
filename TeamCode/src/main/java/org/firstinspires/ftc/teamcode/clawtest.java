@@ -15,19 +15,25 @@ public class clawtest extends LinearOpMode {
     public void runOpMode() {
         double servoPos = 0;
         claw = hardwareMap.get(Servo.class,"claw");
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepad1.a) {
+            if (gamepad1.cross) {
                 servoPos+=0.01;
                 //Telemetry.addData("A", gamepad1.a);
             }
-            else if (gamepad1.b) {
+            else if (gamepad1.square) {
                 servoPos-=.01;
-                System.out.println("B Working");
+
             }
+
+            servoPos = servoPos>1 ? 1:servoPos;
+            servoPos = servoPos<0 ? 0:servoPos;
+
             claw.setPosition(servoPos);
+            telemetry.addData("Status", "Initialized");
+            telemetry.addData("servopos", servoPos);
+            telemetry.update();
         }
     }
 
