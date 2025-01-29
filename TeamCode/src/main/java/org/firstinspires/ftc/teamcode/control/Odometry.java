@@ -9,16 +9,16 @@ import org.firstinspires.ftc.teamcode.datatypes.Pose;
 public class Odometry {
     private final Pose pose;
 
-    public static final double INIT_ROT = 0;//Math.PI/2;
+    public static final double INIT_ROT = 0;// Math.PI/2
 
     // unit conversion constants
     public static final int TPR = 2000; // ticks per revolution
-    public static final double DEADWHEEL_RADIUS = 1.6; // in CM
-    public static final double DEADWHEEL_CIRCUMFERENCE = 2*Math.PI*DEADWHEEL_RADIUS; // in CM
+    public static final double DEADWHEEL_RADIUS = cmToIn(1.6); // in IN
+    public static final double DEADWHEEL_CIRCUMFERENCE = 2*Math.PI*DEADWHEEL_RADIUS; // in IN
 
     //  odometry calculation constants
-    private static final double TRACKWIDTH = 31.95;//28.33; //todo (do it in CM)
-    private static final double FORWARD_OFFSET = 18.23; //todo (do it in CM)
+    private static final double TRACKWIDTH = cmToIn(31.95);//28.33; //todo (do it in IN)
+    private static final double FORWARD_OFFSET = cmToIn(18.23); //todo (do it in IN)
 
     // used to grab encoders from the array with more readablility
     public static final int LEFT = 0;
@@ -77,10 +77,10 @@ public class Odometry {
         }
     }
 
-    public double ticksToCm(double ticks) {
+    public static double ticksToIn(double ticks) {
         return (ticks/TPR)*DEADWHEEL_CIRCUMFERENCE;
     }
-
+    public static double cmToIn(double centimeters) {return centimeters/2.54;};
 
 
 
@@ -89,7 +89,7 @@ public class Odometry {
 
         // calculate delta for all encoder positions
         for (int i = 0; i<encoders.length; i++) {
-            double current_pos = ticksToCm(encoders[i].getCurrentPosition()); // use CM as units
+            double current_pos = ticksToIn(encoders[i].getCurrentPosition()); // use CM as units
                     //* (i == RIGHT ? -1:1); //invert right deadwheel
 
             encoder_delta[i] = current_pos - encoder_pos[i];
@@ -99,7 +99,8 @@ public class Odometry {
         double phi = (encoder_delta[LEFT] - encoder_delta[RIGHT]) / TRACKWIDTH;
 
 
-        double delta_middle = (encoder_delta[LEFT] + encoder_delta[RIGHT])/2;
+        // I swapped these because I want axes to be centered on bot facing up
+        double delta_middle = (encoder_delta[LEFT] + encoder_delta[RIGHT])/2; // amount it turned minus amount turned in circle
         double delta_perp = (encoder_delta[BACK] - FORWARD_OFFSET * phi);
 
         double heading = pose.getR();
@@ -117,8 +118,8 @@ public class Odometry {
         );
 
         Matrix local_delta = new Matrix(new double[][]{
-                {delta_middle},
                 {delta_perp},
+                {delta_middle},
                 {phi}
         });
 

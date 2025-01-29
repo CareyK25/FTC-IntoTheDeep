@@ -19,11 +19,11 @@ public class clawtest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.cross) {
-                servoPos+=0.01;
+                servoPos+=0.0001;
                 //Telemetry.addData("A", gamepad1.a);
             }
             else if (gamepad1.square) {
-                servoPos-=.01;
+                servoPos-=.0001;
 
             }
 

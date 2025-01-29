@@ -7,15 +7,21 @@ import java.util.Arrays;
 
 //all actual units are in cm
 public class GameMap {
-    private static final Pair FIELD_DIMENSIONS = new Pair(0, 0);// DO IT IN CM
+    private static final Pair FIELD_DIMENSIONS = new Pair(0, 0);// DO IT IN IN
     private char[][] map;
     private Pair resolution;
     private ArrayList<Line> lines = new ArrayList<>();
+    private ArrayList<BoundingBox> bboxes = new ArrayList<>();
 
 
     public GameMap(Pair resolution) {
         this.resolution = resolution;
         this.map = new char[(int)resolution.getX()][(int)resolution.getY()];
+
+        this.lines.add(new Line(new Pair(0, 0), new Pair(0, 1)));
+        for (Line l : lines) {
+            l.normalize(FIELD_DIMENSIONS);
+        }
 
     }
 
@@ -27,7 +33,7 @@ public class GameMap {
 
     public void drawPixels(ArrayList<Pixel> pixels) {
         for (Pixel pixel : pixels) {
-            map[pixel.getY()][pixel.getX()] = pixel.getValue();
+            map[pixel.getY()+map.length/2][pixel.getX()+map[0].length/2] = pixel.getValue();
         }
     }
 
