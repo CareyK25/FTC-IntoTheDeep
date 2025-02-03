@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.deprecated;
+package org.firstinspires.ftc.teamcode.PurePursuit;
 
 import org.firstinspires.ftc.teamcode.datatypes.CurvePoint;
-import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Point;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
 import org.firstinspires.ftc.teamcode.util.MathFunctions;
