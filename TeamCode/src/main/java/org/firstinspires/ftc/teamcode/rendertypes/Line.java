@@ -15,6 +15,12 @@ public class Line {
         this.start = start;
         this.end = end;
     }
+    public Line(Pair start, Pair end, Pair rasterResolution) { // input start, end and raster res for it to convert to normalized
+        start.normalize(rasterResolution);
+        end.normalize(rasterResolution);
+        this.start = start;
+        this.end = end;
+    }
 
     public ArrayList<Pixel> render() {
         return Line.render(this.start, this.end);
@@ -35,9 +41,14 @@ public class Line {
     public void setEnd(Pair end) {
         this.end = end;
     }
+
     public void normalize(double height, double width) {
         start.normalize(height, width);
         end.normalize(height, width);
+    }
+    public void normalize(Pair res) {
+        start.normalize(res.getX(), res.getY());
+        end.normalize(res.getX(), res.getY());
     }
 
     public Line getRasterized(double height, double width) {
