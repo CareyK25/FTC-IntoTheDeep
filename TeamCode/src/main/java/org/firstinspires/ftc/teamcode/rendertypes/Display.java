@@ -41,6 +41,15 @@ public class Display {
         }
     }
 
+    public void fill(char[][] sample) {
+        for (int i = 0; (i<getHeight() && i<sample.length); i++) {
+            for (int j = 0; (j<getWidth() && i<sample[0].length); j++) {
+                display[i][j] = sample[i][j];
+            }
+        }
+    }
+
+
 
     public void addPixels(char[][] img, Pair offset) {
         for (int y = 0; y<img.length; y++) {
@@ -65,18 +74,18 @@ public class Display {
     public String monoify(char c) { // buffers the width of the characters to make it mono relative to line height of driver hub
         switch (c) {
             case ' ':
-                return "   ";
+                return "     ";
             case '-':
-                return "---";
+                return "-----";
             case '|':
-                return " | ";
+                return "  |  ";
             case '/':
-                return " / ";
+                return "  /  ";
             case '\\':
-                return " \\ ";
+                return "  \\  ";
         }
 
-        return " " + c + " ";
+        return "  " + c + "  ";
     }
 
 }

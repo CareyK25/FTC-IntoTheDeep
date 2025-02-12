@@ -82,19 +82,24 @@ public class Odometry {
     }
     public static double cmToIn(double centimeters) {return centimeters/2.54;};
 
-
-
-    public void updateOdometry() {
+    public double[] getLocalDelta() {
         double[] encoder_delta = new double[encoders.length];
 
         // calculate delta for all encoder positions
         for (int i = 0; i<encoders.length; i++) {
             double current_pos = ticksToIn(encoders[i].getCurrentPosition()); // use CM as units
-                    //* (i == RIGHT ? -1:1); //invert right deadwheel
+            //* (i == RIGHT ? -1:1); //invert right deadwheel
 
             encoder_delta[i] = current_pos - encoder_pos[i];
             encoder_pos[i] = current_pos;
         }
+        return encoder_delta;
+    }
+
+
+
+    public void updateOdometry() {
+        double[] encoder_delta = getLocalDelta();
 
         double phi = (encoder_delta[LEFT] - encoder_delta[RIGHT]) / TRACKWIDTH;
 

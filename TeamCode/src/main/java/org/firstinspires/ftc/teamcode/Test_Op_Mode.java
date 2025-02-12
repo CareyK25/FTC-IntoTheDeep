@@ -1,30 +1,21 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.util.Constants.BACK_LEFT;
-import static org.firstinspires.ftc.teamcode.util.Constants.BACK_RIGHT;
-import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_LEFT;
-import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_RIGHT;
-
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.control.InputDevice;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.control.Movement;
 import org.firstinspires.ftc.teamcode.control.Odometry;
 import org.firstinspires.ftc.teamcode.datatypes.InputState;
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
-import org.firstinspires.ftc.teamcode.datatypes.Pose;
 import org.firstinspires.ftc.teamcode.rendertypes.BoundingBox;
 import org.firstinspires.ftc.teamcode.rendertypes.Display;
+import org.firstinspires.ftc.teamcode.rendertypes.GameMap;
 import org.firstinspires.ftc.teamcode.util.HardwareMapper;
 
 @TeleOp(name="Test_Op_Mode", group="Linear OpMode")
@@ -33,17 +24,19 @@ import org.firstinspires.ftc.teamcode.util.HardwareMapper;
 public class Test_Op_Mode extends LinearOpMode {
 
 
+    private GameMap field;
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor[] motors;
     private Movement movement;
-    private DcMotor slide1;
+    private DcMotor slideMotor;
     private Servo testservo;
-    private Servo intaketest;
+    private Servo axleServo;
 
 
-    //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
+
     private Odometry otto;
     private Display disp;
+    private GameMap map;
 
     private BoundingBox bbTest = new BoundingBox(new Pair[]{
             new Pair(-3, -6),
@@ -57,24 +50,24 @@ public class Test_Op_Mode extends LinearOpMode {
     @Override
     public void runOpMode() {
         motors = HardwareMapper.getMotors(hardwareMap);
-        slide1 = hardwareMap.get(DcMotor.class, "slide1");
-        testservo = hardwareMap.get(Servo.class, "clawservomonkey");
-        intaketest = hardwareMap.get(Servo.class, "intakeservo");
+        slideMotor = hardwareMap.get(DcMotor.class, "slide");
+        axleServo = hardwareMap.get(Servo.class, "axle");
 
-        intaketest.setDirection(Servo.Direction.REVERSE);
+        axleServo.setDirection(Servo.Direction.REVERSE);
 
-        slide1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slide1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slide1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
-        slide1.setTargetPosition(0);
-        slide1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+        slideMotor.setTargetPosition(0);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
         movement = new Movement(motors);
         otto = new Odometry(new DcMotor[] {motors[0], motors[1], motors[2]});
-        disp = new Display(20, 20, telemetry);
+        disp = new Display(30, 30, telemetry);
+        map = new GameMap(new Pair(144, 144));
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -112,8 +105,9 @@ public class Test_Op_Mode extends LinearOpMode {
 //        Gamepad.RumbleEffect ripple = rippleBuilder.build();
 
         double gowthams = 0.1;
+        double axleAngle = 0;
+        double slidePos = 0;
 
-        double testintakepos = 0;
         otto.resetEncoders();
         disp.fill('.');
 
@@ -124,7 +118,7 @@ public class Test_Op_Mode extends LinearOpMode {
 
         // todo THUMBSTICKS to drive
         if (canDrive) {
-            temp_old_drive(gamepad1, gamepad2, gowthams, motors);
+            temp_old_drive(gamepad1, gamepad2, gowthams, motors, telemetry);
         }
 
         // todo OPTIONS to toggle driving GUIDE to toggle display
@@ -150,12 +144,21 @@ public class Test_Op_Mode extends LinearOpMode {
             gamepad1.rumble(1, 1, 200);
         }
 
-        slide1.setPower(gowthams);
+
         if (gp1.isSquare()) {
-            slide1.setTargetPosition(0);
+            slidePos = slideMotor.getCurrentPosition();
+            slideMotor.setPower(gowthams);
+            slideMotor.setTargetPosition(0);
         } else if (gp1.isCross()) {
-            slide1.setTargetPosition(1850);
+            slidePos = slideMotor.getCurrentPosition();
+            slideMotor.setPower(gowthams);
+            slideMotor.setTargetPosition(-1900);
+
+        } else {
+            slideMotor.setPower(1);
+            slideMotor.setTargetPosition((int)slidePos);
         }
+        slidePos = bound(slidePos, -1800, 0);
 
         // todo TRIGGERS
         if (gp1.getLeft_trigger() > 0.5 && !(pgp1.getLeft_trigger() > 0.5)) {
@@ -167,44 +170,53 @@ public class Test_Op_Mode extends LinearOpMode {
 
         // todo BUMPERS
         if (gp1.isLeft_bumper()) {
-            testintakepos+= 0.01;
-            intaketest.setPosition(testintakepos);
+            axleAngle+= 0.003;
+            axleServo.setPosition(axleAngle);
         } else if (gp1.isRight_bumper()) {
-            testintakepos-=0.01;
-            intaketest.setPosition(testintakepos);
+            axleAngle-=0.003;
+            axleServo.setPosition(axleAngle);
+        } else {
+            axleAngle = axleServo.getPosition();
+            axleServo.setPosition(axleAngle);
         }
+        axleAngle = bound(axleAngle, 0.45, 0.80);
+
 
         // todo TOUCHPAD
         if ((gp1.isTouchpad_1() && gp1.isTouchpad_2()) && (pgp1.isTouchpad_1() && pgp1.isTouchpad_2())) {
             double distance_delta = gp1.getTouchpad_finger_1().distance(gp1.getTouchpad_finger_2()) -
                     pgp1.getTouchpad_finger_1().distance(pgp1.getTouchpad_finger_2());;//distance between fingers
             gowthams += distance_delta/4;// the 4 is just to scale down the speed of change
-            slide1.setPower(distance_delta);
+            slideMotor.setPower(distance_delta);
         }
 
 
+        double[] encoder_delta = otto.getLocalDelta();
         // todo TELEMETRY AND DISPLAY
         if (runDisplay) {
+            map.renderBuffer();
             disp.fill(' ');
+            disp.fill(map.sampleImage(new Pair(otto.getPose().getX(), otto.getPose().getY()), disp.getHeight(), disp.getWidth())); // SAMPLES FROM TOP LEFT CORNER BASED ON CENTER INPUT
             bbTest.rotate(otto.getPose().getR());
             disp.addPixels(bbTest.render());
             disp.update();
         } else {
             telemetry.addData("Driving is ", ((canDrive) ? "enabled" : "disabled"));
-            telemetry.addData("servo pose", testservo.getPosition());
-            telemetry.addData("touch x", gamepad1.touchpad_finger_1_x);
-            telemetry.addData("touch y", gamepad1.touchpad_finger_1_y);
-            telemetry.addData("touch2 x", gamepad1.touchpad_finger_2_x);
-            telemetry.addData("touch2 y", gamepad1.touchpad_finger_2_y);
-            telemetry.addData("motorpos", slide1.getCurrentPosition());
+            telemetry.addData("motorpos", slideMotor.getCurrentPosition());
             telemetry.addData("gowthams Speed", gowthams);
             telemetry.addData("odometry:", otto.getPose());
-            telemetry.addData("left", gp1.getTouchpad_finger_1());
-            telemetry.addData("intakeservopos", testintakepos);
+            telemetry.addData("intakeservopos", axleAngle);
+            telemetry.addData("raw left thumbstick", gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
+            telemetry.addData("raw right thumbstick", gamepad1.right_stick_x + ", " + gamepad1.right_stick_y);
+            telemetry.addData("encoder deltas", encoder_delta[0]+ ", " + encoder_delta[1] + ", " + encoder_delta[2]);
+            telemetry.addData("left odo", motors[0].getCurrentPosition());
+            telemetry.addData("back odo", motors[1].getCurrentPosition());
+            telemetry.addData("right odo", motors[2].getCurrentPosition());
+            telemetry.addData("right odo", motors[3].getCurrentPosition());
             telemetry.update();
         }
 
-        testintakepos = bound(testintakepos, 0, 1);
+
         gowthams = bound(gowthams, 0, 1);
         pgp1 = gp1; // saving previous input state for gamepad1
         otto.updateOdometry();
@@ -217,18 +229,26 @@ public class Test_Op_Mode extends LinearOpMode {
     }
 
 
-    private static void temp_old_drive(Gamepad gamepad1, Gamepad gamepad2, double gowthams_speed_hehe, DcMotor[] motors) {
+    private void temp_old_drive(Gamepad gamepad1, Gamepad gamepad2, double gowthams_speed_hehe, DcMotor[] motors, Telemetry telemetry) {
         double max;
+
+        //gamepad1.rumble(gowthams_speed_hehe * Math.abs(gamepad1.left_stick_x), gowthams_speed_hehe * Math.abs(gamepad1.left_stick_y), 30);
 
         // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
         double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
         double lateral =  gamepad1.left_stick_x;
-        double yaw     =  gamepad1.right_stick_x;
+        double yaw     =  gamepad1.right_stick_x * (1-(gowthams_speed_hehe/2));
+
+        double[] encoder_delta = otto.getLocalDelta();
+
+
+
 
         if (Math.abs(axial)*0.8 >Math.abs(lateral)) {
-            lateral=0;
+            lateral=encoder_delta[1]/2;
+            //lateral=0.1;
         } else if (Math.abs(lateral)*0.8 > Math.abs(axial)) {
-            axial=0;
+            axial=lateral=(encoder_delta[0] + encoder_delta[2])/4;
         }
         // Combine the joystick requests for each axis-motion to determine each wheel's power.
         // Set up a variable for each drive wheel to save the power level for telemetry.
