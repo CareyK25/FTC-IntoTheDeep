@@ -8,12 +8,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.RobotMovement;
 import org.firstinspires.ftc.teamcode.control.Movement;
 import org.firstinspires.ftc.teamcode.control.Odometry;
 import org.firstinspires.ftc.teamcode.datatypes.InputState;
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
-import org.firstinspires.ftc.teamcode.deprecated.RobotMovement;
 import org.firstinspires.ftc.teamcode.util.HardwareMapper;
 
 @TeleOp(name="Test_Persuit_Mode", group="Linear OpMode")
