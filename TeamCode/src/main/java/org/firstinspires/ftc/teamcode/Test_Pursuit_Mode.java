@@ -25,22 +25,22 @@ public class Test_Pursuit_Mode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor[] motors;
     private Movement movement;
-    private DcMotor piston;
+    //private DcMotor piston;
     private Servo testservo;
     private Servo intake;
 
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
     private Odometry otto;
-    Pose targetPose = new Pose(new double[]{20, 0, 0});
+    Pose targetPose = new Pose(new double[]{24, 0, 0});
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
 
 
     @Override
     public void runOpMode() {
         motors = HardwareMapper.getMotors(hardwareMap);
-        piston = hardwareMap.get(DcMotor.class, "piston");
-        testservo = hardwareMap.get(Servo.class, "clawservomonkey");
-        intake = hardwareMap.get(Servo.class, "intake");
+        //piston = hardwareMap.get(DcMotor.class, "piston");
+        //testservo = hardwareMap.get(Servo.class, "clawservomonkey");
+        //intake = hardwareMap.get(Servo.class, "intake");
 
         movement = new Movement(motors);
         otto = new Odometry(new DcMotor[] {motors[0], motors[1], motors[2]});
@@ -58,7 +58,7 @@ public class Test_Pursuit_Mode extends LinearOpMode {
 
         InputState pgp1 = new InputState(gamepad1); // previous gamepad1, used to save past input states to test for button changes
 
-        boolean canDrive = false;
+        boolean canDrive = true;
 
 
         double gowthams_speed_hehe = 0.1;
@@ -75,25 +75,24 @@ public class Test_Pursuit_Mode extends LinearOpMode {
 //        }
         if (canDrive) {
             double max;
-
-            double[] move = RobotMovement.goToPosition(targetPose, otto.getPose(), 0.2);
+            double[] move = RobotMovement.goToPosition(targetPose, otto.getPose(), 0.3);
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = move[0];  // Note: pushing stick forward gives negative value
-            double lateral =  move[1];
-            double yaw     =  move[2];
+            double axial   = move[1];  // Note: pushing stick forward gives negative value
+            double lateral =  move[0];
+            double yaw     =  0;
 
-            if (Math.abs(axial)*0.8 >Math.abs(lateral)) {
+            /*if (Math.abs(axial)*0.8 >Math.abs(lateral)) {
                 lateral=0;
             } else if (Math.abs(lateral)*0.8 > Math.abs(axial)) {
                 axial=0;
-            }
+            }*/
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            double leftFrontPower  = axial + lateral;
+            double rightFrontPower = axial - lateral;
+            double leftBackPower   = axial - lateral;
+            double rightBackPower  = axial + lateral;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -132,12 +131,12 @@ public class Test_Pursuit_Mode extends LinearOpMode {
 
         telemetry.addData("Driving is ", ((canDrive) ? "enabled" : "disabled"));
         telemetry.addData("s ", s);
-        telemetry.addData("servo pose", testservo.getPosition());
+        //telemetry.addData("servo pose", testservo.getPosition());
         telemetry.addData("touch x", gamepad1.touchpad_finger_1_x);
         telemetry.addData("touch y", gamepad1.touchpad_finger_1_y);
         telemetry.addData("touch2 x", gamepad1.touchpad_finger_2_x);
         telemetry.addData("touch2 y", gamepad1.touchpad_finger_2_y);
-        telemetry.addData("motorpos", piston.getCurrentPosition());
+        //telemetry.addData("motorpos", piston.getCurrentPosition());
         telemetry.addData("gowthams Speed", gowthams_speed_hehe);
         telemetry.addData("odometry:", otto.getPose());
         telemetry.addData("left", gp1.getTouchpad_finger_1());
