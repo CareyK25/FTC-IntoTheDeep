@@ -21,6 +21,18 @@ public class ColorTest extends LinearOpMode {
         while (opModeIsActive()) {
             int [] rgb = scan();
             telemetry.addData("RGB vals", Arrays.toString(rgb));
+            String c = "";
+            if (rgb[0]>2000 && rgb[1]>2000) {
+                c = "yellow";
+            }
+            else if (rgb[0]>2000) {
+                c = "red";
+            }
+            else if (rgb[2]>2000) {
+                c = "blue";
+            }
+            telemetry.addData("Recorded color", c);
+            telemetry.update();
         }
     }
 
