@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.PurePursuit;
 
 import org.firstinspires.ftc.teamcode.datatypes.CurvePoint;
+import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Point;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
+import org.firstinspires.ftc.teamcode.util.Actuation;
 import org.firstinspires.ftc.teamcode.util.MathFunctions;
 
 import java.util.ArrayList;
@@ -12,11 +14,12 @@ public class RobotMovement {
     private static int lastFoundIndex = 0;
 
     public static double[] goToPosition(Pose targetPose, Pose robotPose, double movementSpeed, double turnSpeed) {
-        // Global angle
-//        double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
         double deltaX = targetPose.getX() - robotPose.getX();
         double deltaY = targetPose.getY() - robotPose.getY();
         double dist = Math.sqrt(Math.pow(deltaY, 2) + Math.pow(deltaX, 2));
+        double deltaAngle = MathFunctions.angleWrap(targetPose.getR()-robotPose.getR());
+        // Global angle
+//        double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
         double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);
         double dX = 0,dY = 0;
         if (dist != 0) {
@@ -26,17 +29,19 @@ public class RobotMovement {
             dY = movementYPower*movementSpeed;
         }
         System.out.println("target angle: " + targetPose.getR() + " World Heading: " + robotPose.getR());
-        double deltaAngle = MathFunctions.angleWrap(targetPose.getR()-robotPose.getR());
+        //Pair local = new Pair(dX, dY);
+        //local.rotate(deltaAngle);
         System.out.println("Delta angle: " + deltaAngle);
         //GraphicsLineCircle.deltaHeading = ((deltaAngle/Math.PI)*turnSpeed*180)/((Math.abs(deltaX) + Math.abs(deltaY)));
-        double deltaHeading = ((deltaAngle/(Math.PI))*turnSpeed);
-        if (deltaAngle > 0) {
-            deltaHeading = Math.max(deltaHeading, 1);
+        double deltaHeading = 0;
+        if (deltaAngle > Math.toRadians(3)) {
+            deltaHeading = Math.max(((deltaAngle/(Math.PI))*turnSpeed), turnSpeed);
         }
-        else if (deltaHeading<0){
-            deltaHeading = Math.min(deltaHeading, -1);
+        else if (deltaHeading<Math.toRadians(-3)){
+            deltaHeading = Math.min(((deltaAngle/(Math.PI))*turnSpeed), -turnSpeed);
         }
         System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
+        //Actuation.drive(dX, dY, deltaHeading);
         return new double[]{dX, dY, deltaHeading};
     }
 

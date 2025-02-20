@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PurePursuit.RobotMovement;
 import org.firstinspires.ftc.teamcode.control.Movement;
 import org.firstinspires.ftc.teamcode.control.Odometry;
@@ -15,6 +16,9 @@ import org.firstinspires.ftc.teamcode.datatypes.InputState;
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
 import org.firstinspires.ftc.teamcode.util.HardwareMapper;
+import org.firstinspires.ftc.teamcode.util.MathFunctions;
+
+import java.util.Arrays;
 
 @TeleOp(name="Test_Persuit_Mode", group="Linear OpMode")
 
@@ -31,7 +35,7 @@ public class Test_Pursuit_Mode extends LinearOpMode {
 
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
     private Odometry otto;
-    Pose targetPose = new Pose(new double[]{24, 0, 0});
+    Pose targetPose = new Pose(new double[]{0, 0, Math.toRadians(135)});
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
 
 
@@ -73,14 +77,16 @@ public class Test_Pursuit_Mode extends LinearOpMode {
 //        if (canDrive) {
 //            movement.move(input, gowthams_speed_hehe);
 //        }
-        if (canDrive) {
+        if (MathFunctions.distance(otto.getPose().getPoint(), targetPose.getPoint()) > 0.6 || Math.abs(MathFunctions.angleWrap(targetPose.getR()-otto.getPose().getR())) > Math.toRadians(3)) {
             double max;
-            double[] move = RobotMovement.goToPosition(targetPose, otto.getPose(), 0.3);
+            telemetry.addData("Dist", MathFunctions.distance(otto.getPose().getPoint(), targetPose.getPoint()));
+            double[] move = RobotMovement.goToPosition(targetPose, otto.getPose(), 0, 0.35);
+            telemetry.addData("Move Array", Arrays.toString(move));
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = move[1];  // Note: pushing stick forward gives negative value
             double lateral =  move[0];
-            double yaw     =  0;
+            double yaw     =  move[2];
 
             /*if (Math.abs(axial)*0.8 >Math.abs(lateral)) {
                 lateral=0;
@@ -89,10 +95,10 @@ public class Test_Pursuit_Mode extends LinearOpMode {
             }*/
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral;
-            double rightFrontPower = axial - lateral;
-            double leftBackPower   = axial - lateral;
-            double rightBackPower  = axial + lateral;
+            double leftFrontPower  = axial + lateral+yaw;
+            double rightFrontPower = axial - lateral-yaw;
+            double leftBackPower   = axial - lateral+yaw;
+            double rightBackPower  = axial + lateral-yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.

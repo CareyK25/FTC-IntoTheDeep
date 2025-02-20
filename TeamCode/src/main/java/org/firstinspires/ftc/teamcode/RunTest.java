@@ -11,6 +11,7 @@ public class RunTest extends LinearOpMode {
     private DcMotor[] motors;
     public void runOpMode() {
         motors = HardwareMapper.getMotors(hardwareMap);
+        double max;
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
@@ -23,7 +24,7 @@ public class RunTest extends LinearOpMode {
             double leftBackPower   = move - strafe;
             double rightBackPower  = move + strafe;
 
-            double max ;
+
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));

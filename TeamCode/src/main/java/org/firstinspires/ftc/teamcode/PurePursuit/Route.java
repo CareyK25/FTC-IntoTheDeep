@@ -14,10 +14,11 @@ public class Route {
         pathPoses = p;
     }
 
-    public void run(double movementSpeed) {
+    public void run(double movementSpeed, double turnSpeed) {
         for (int i = 0; i<pathPoses.size();i++) {
             while (MathFunctions.distance(robotPose.getPoint(), pathPoses.get(i).getPoint()) > 0.6 /*Don't forget angle part*/) {
-                //RobotMovement.goToPosition()
+                double [] move = RobotMovement.goToPosition(pathPoses.get(i), robotPose, movementSpeed, turnSpeed);
+
             }
         }
     }
