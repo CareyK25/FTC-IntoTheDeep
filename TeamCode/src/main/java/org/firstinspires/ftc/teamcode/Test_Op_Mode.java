@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,9 +29,9 @@ public class Test_Op_Mode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor[] motors;
     private Movement movement;
-    private DcMotor slideMotor;
-    private Servo testservo;
-    private Servo axleServo;
+    private DcMotor rightSlideMotor, leftSlideMotor;
+    private Servo testservo, clawWristServo, clawServo;
+    private Servo axleServoL, axleServoR;
 
 
 
@@ -50,18 +51,30 @@ public class Test_Op_Mode extends LinearOpMode {
     @Override
     public void runOpMode() {
         motors = HardwareMapper.getMotors(hardwareMap);
-        slideMotor = hardwareMap.get(DcMotor.class, "slide");
-        axleServo = hardwareMap.get(Servo.class, "axle");
+        //slideMotor = hardwareMap.get(DcMotor.class, "slide");
+        rightSlideMotor = hardwareMap.get(DcMotor.class, "rightSlide");
+        leftSlideMotor = hardwareMap.get(DcMotor.class, "leftSlide");
+        axleServoL = hardwareMap.get(Servo.class, "axleServoL");
+        axleServoR = hardwareMap.get(Servo.class, "axleServoR");
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
+        clawWristServo = hardwareMap.get(Servo.class, "clawWristServo");
 
-        axleServo.setDirection(Servo.Direction.REVERSE);
+        axleServoL.setDirection(Servo.Direction.REVERSE);
 
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //
-        slideMotor.setTargetPosition(0);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftSlideMotor.setTargetPosition(0);
+        leftSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        rightSlideMotor.setTargetPosition(0);
+        rightSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE); //reverse one of the motors
 
 
         movement = new Movement(motors);
@@ -76,7 +89,7 @@ public class Test_Op_Mode extends LinearOpMode {
         runtime.reset();
 
         InputState pgp1 = new InputState(gamepad1); // previous gamepad1, used to save past input states to test for button changes
-
+        InputState pgp2 = new InputState(gamepad2);
         boolean canDrive = false;
         boolean runDisplay = false;
 
@@ -105,17 +118,32 @@ public class Test_Op_Mode extends LinearOpMode {
 //        Gamepad.RumbleEffect ripple = rippleBuilder.build();
 
         double gowthams = 0.1;
-        double axleAngle = 0;
-        double slidePos = 0;
+        double slideGowthams = 0.2;
+
+
+        double axleAngle = 0.5;
+        axleServoL.setPosition(0.5);
+        axleServoR.setPosition(0.5);
+        double clawServoPos = 0.53;
+        clawServo.setPosition(clawServoPos);
+
+        int leftSlidePos = 0;
+        int rightSlidePos = 0;
+
+        int leftSlidePosOffset = 0;
+        int rightSlidePosOffset = 0;
+
+
+
 
         otto.resetEncoders();
         disp.fill('.');
 
     while (opModeIsActive()) { // todo THIS IS THE MAIN LOOP
-
+        otto.updateOdometry();
         // grab input state at beginning of loop and put it into an object
         InputState gp1 = new InputState(gamepad1);
-
+        InputState gp2 = new InputState(gamepad2);
         // todo THUMBSTICKS to drive
         if (canDrive) {
             temp_old_drive(gamepad1, gamepad2, gowthams, motors, telemetry);
@@ -140,46 +168,77 @@ public class Test_Op_Mode extends LinearOpMode {
         }
 
         // todo REGULAR BUTTONS
-        if (gp1.isTriangle() && !pgp1.isTriangle()) {
-            gamepad1.rumble(1, 1, 200);
-        }
-
-
         if (gp1.isSquare()) {
-            slidePos = slideMotor.getCurrentPosition();
-            slideMotor.setPower(gowthams);
-            slideMotor.setTargetPosition(0);
-        } else if (gp1.isCross()) {
-            slidePos = slideMotor.getCurrentPosition();
-            slideMotor.setPower(gowthams);
-            slideMotor.setTargetPosition(-1900);
-
-        } else {
-            slideMotor.setPower(1);
-            slideMotor.setTargetPosition((int)slidePos);
+            clawServoPos += 0.004;
+            clawServo.setPosition(0.53);
+        } else if (gp1.isCircle()) {
+            clawServoPos-= 0.004;
+            clawServo.setPosition(1);
         }
-        slidePos = bound(slidePos, -1800, 0);
+        clawServoPos = bound(clawServoPos, 0.53, 1);
+
+        if (gp1.isTriangle())  {
+            leftSlidePos -= (int)(100*slideGowthams);
+            leftSlideMotor.setTargetPosition(leftSlidePos + leftSlidePosOffset);
+            leftSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftSlideMotor.setPower(slideGowthams);
+
+            rightSlidePos -= (int)(100*slideGowthams);
+            rightSlideMotor.setTargetPosition(rightSlidePos + rightSlidePosOffset);
+            rightSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightSlideMotor.setPower(slideGowthams);
+        } else if (gp1.isCross()) {
+            leftSlidePos += (int)(100*slideGowthams);
+            leftSlideMotor.setTargetPosition(leftSlidePos + leftSlidePosOffset);
+            leftSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftSlideMotor.setPower(slideGowthams);
+
+            rightSlidePos += (int)(100*slideGowthams);
+            rightSlideMotor.setTargetPosition(rightSlidePos + rightSlidePosOffset);
+            rightSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightSlideMotor.setPower(slideGowthams);
+        } else if ((pgp1.isCross() || pgp1.isTriangle()) && !(gp1.isCross() || gp1.isTriangle())){
+//            int target = rightSlideMotor.getCurrentPosition();
+//            rightSlideMotor.setTargetPosition(target);
+//            leftSlideMotor.setTargetPosition(target);
+        }
+        leftSlidePos = (int)bound(leftSlidePos, -1900, 0);
+        rightSlidePos = (int)bound(rightSlidePos, -1900, 0);
 
         // todo TRIGGERS
-        if (gp1.getLeft_trigger() > 0.5 && !(pgp1.getLeft_trigger() > 0.5)) {
-            gowthams -= 0.1;
+        if (gp1.getLeft_trigger() > 0.9) {
+            axleAngle-= 0.003;
+            axleServoL.setPosition(axleAngle);
+            axleServoR.setPosition(axleAngle);
         }
-        if (gp1.getRight_trigger() > 0.5 && !(pgp1.getRight_trigger() > 0.5)) {
-            gowthams += 0.1;
+        if (gp1.getRight_trigger() > 0.9) {
+            axleAngle+=0.003;
+            axleServoL.setPosition(axleAngle);
+            axleServoR.setPosition(axleAngle);
         }
+        axleAngle = bound(axleAngle, 0.4, 0.73);
+
+
+
 
         // todo BUMPERS
-        if (gp1.isLeft_bumper()) {
-            axleAngle+= 0.003;
-            axleServo.setPosition(axleAngle);
-        } else if (gp1.isRight_bumper()) {
-            axleAngle-=0.003;
-            axleServo.setPosition(axleAngle);
-        } else {
-            axleAngle = axleServo.getPosition();
-            axleServo.setPosition(axleAngle);
+        if (gp1.isLeft_bumper() && !pgp1.isLeft_bumper()) {
+
+            if (gp1.isTriangle()) {
+                slideGowthams += 0.1;
+            } else {
+                gowthams+= 0.1;
+            }
+        } else if (gp1.isRight_bumper() && !pgp1.isRight_bumper()) {
+            if (gp1.isTriangle()) {
+                slideGowthams -= 0.1;
+            } else {
+                gowthams+= 0.1;
+            }
+
         }
-        axleAngle = bound(axleAngle, 0.45, 0.80);
+
+
 
 
         // todo TOUCHPAD
@@ -187,11 +246,23 @@ public class Test_Op_Mode extends LinearOpMode {
             double distance_delta = gp1.getTouchpad_finger_1().distance(gp1.getTouchpad_finger_2()) -
                     pgp1.getTouchpad_finger_1().distance(pgp1.getTouchpad_finger_2());;//distance between fingers
             gowthams += distance_delta/4;// the 4 is just to scale down the speed of change
-            slideMotor.setPower(distance_delta);
         }
 
 
-        double[] encoder_delta = otto.getLocalDelta();
+        // todo GP2
+        if (gp2.isLeft_bumper() && !pgp2.isLeft_bumper()) {
+            leftSlidePosOffset -= 10;
+        } else if (gp2.getLeft_trigger() > 0.2 && !(pgp2.getLeft_trigger() > 0.2)) {
+            leftSlidePosOffset += 10;
+        }
+
+        if (gp2.isRight_bumper() && !pgp2.isRight_bumper()) {
+            rightSlidePosOffset += 10;
+        } else if (gp2.getRight_trigger() > 0.2 && !(pgp2.getRight_trigger() > 0.2)) {
+            rightSlidePosOffset -=10;
+        }
+
+
         // todo TELEMETRY AND DISPLAY
         if (runDisplay) {
             map.renderBuffer();
@@ -201,24 +272,30 @@ public class Test_Op_Mode extends LinearOpMode {
             disp.addPixels(bbTest.render());
             disp.update();
         } else {
-            telemetry.addData("Driving is ", ((canDrive) ? "enabled" : "disabled"));
-            telemetry.addData("motorpos", slideMotor.getCurrentPosition());
             telemetry.addData("gowthams Speed", gowthams);
+            telemetry.addData("Driving is ", ((canDrive) ? "enabled" : "disabled"));
+            telemetry.addData("left motorpos", leftSlideMotor.getCurrentPosition() + " +  " + leftSlidePosOffset);
+            telemetry.addData("right motorpos", rightSlideMotor.getCurrentPosition() + " +  " + rightSlidePosOffset);
+//            telemetry.addData("left target motorpos", leftSlidePos);
+//            telemetry.addData("right target motorpos", rightSlidePos);
+
             telemetry.addData("odometry:", otto.getPose());
-            telemetry.addData("intakeservopos", axleAngle);
-            telemetry.addData("raw left thumbstick", gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
-            telemetry.addData("raw right thumbstick", gamepad1.right_stick_x + ", " + gamepad1.right_stick_y);
-            telemetry.addData("encoder deltas", encoder_delta[0]+ ", " + encoder_delta[1] + ", " + encoder_delta[2]);
-            telemetry.addData("left odo", motors[0].getCurrentPosition());
-            telemetry.addData("back odo", motors[1].getCurrentPosition());
-            telemetry.addData("right odo", motors[2].getCurrentPosition());
-            telemetry.addData("right odo", motors[3].getCurrentPosition());
+            telemetry.addData("axleServoPos", axleAngle);
+
+//            telemetry.addData("raw left thumbstick", gamepad1.left_stick_x + ", " + gamepad1.left_stick_y);
+//            telemetry.addData("raw right thumbstick", gamepad1.right_stick_x + ", " + gamepad1.right_stick_y);
+           // telemetry.addData("encoder deltas", encoder_delta[0]+ ", " + encoder_delta[1] + ", " + encoder_delta[2]);
+//            telemetry.addData("left odo", Odometry.ticksToIn(motors[0].getCurrentPosition()));
+//            telemetry.addData("back odo", Odometry.ticksToIn(motors[1].getCurrentPosition()));
+//            telemetry.addData("right odo", Odometry.ticksToIn(motors[2].getCurrentPosition()));
             telemetry.update();
         }
 
 
         gowthams = bound(gowthams, 0, 1);
+        slideGowthams = bound(slideGowthams, 0, 1);
         pgp1 = gp1; // saving previous input state for gamepad1
+        pgp2 = gp2;
         otto.updateOdometry();
         }
     }
@@ -239,17 +316,10 @@ public class Test_Op_Mode extends LinearOpMode {
         double lateral =  gamepad1.left_stick_x;
         double yaw     =  gamepad1.right_stick_x * (1-(gowthams_speed_hehe/2));
 
-        double[] encoder_delta = otto.getLocalDelta();
 
 
 
 
-        if (Math.abs(axial)*0.8 >Math.abs(lateral)) {
-            lateral=encoder_delta[1]/2;
-            //lateral=0.1;
-        } else if (Math.abs(lateral)*0.8 > Math.abs(axial)) {
-            axial=lateral=(encoder_delta[0] + encoder_delta[2])/4;
-        }
         // Combine the joystick requests for each axis-motion to determine each wheel's power.
         // Set up a variable for each drive wheel to save the power level for telemetry.
         double leftFrontPower  = axial + lateral + yaw;

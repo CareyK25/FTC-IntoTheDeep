@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.control.Odometry;
 import org.firstinspires.ftc.teamcode.datatypes.InputState;
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Pose;
-import org.firstinspires.ftc.teamcode.deprecated.RobotMovement;
+//import org.firstinspires.ftc.teamcode.deprecated.RobotMovement;
 import org.firstinspires.ftc.teamcode.util.HardwareMapper;
 
 @TeleOp(name="Test_Persuit_Mode", group="Linear OpMode")
@@ -76,7 +76,7 @@ public class Test_Pursuit_Mode extends LinearOpMode {
         if (canDrive) {
             double max;
 
-            double[] move = RobotMovement.goToPosition(targetPose, otto.getPose(), 0.2);
+            double[] move = new double[0]; //RobotMovement.goToPosition(targetPose, otto.getPose(), 0.2);
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
             double axial   = move[0];  // Note: pushing stick forward gives negative value
