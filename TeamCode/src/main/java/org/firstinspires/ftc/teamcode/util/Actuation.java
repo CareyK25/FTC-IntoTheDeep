@@ -2,15 +2,21 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.RobotConfigNameable;
 
+import org.firstinspires.ftc.teamcode.PurePursuit.RobotMovement;
 import org.firstinspires.ftc.teamcode.control.Odometry;
+import org.firstinspires.ftc.teamcode.datatypes.Pose;
 
 public class Actuation {
     private static DcMotor[] motors;
-    private static Odometry otto;
+    public static Odometry otto;
 
-    public static void setup(HardwareMap map) {
+    public static void setup(HardwareMap map, Pose startPose) {
          motors = HardwareMapper.getMotors(map);
+         otto = new Odometry(new DcMotor[] {motors[0], motors[1], motors[2]});
+         otto.resetEncoders();
+        RobotMovement.setup(startPose);
     }
 
     public static void drive(double axial, double lateral, double yaw) {
