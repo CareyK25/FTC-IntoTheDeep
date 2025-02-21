@@ -12,19 +12,19 @@ import java.util.ArrayList;
 
 public class Route {
 
-    private ArrayList<Pose> pathPoses;
+    private Pose [] pathPoses;
 
-    public Route(ArrayList<Pose> p) {
+    public Route(Pose [] p) {
         pathPoses = p;
     }
 
     public void run(double movementSpeed, double turnSpeed) {
-        for (int i = 0; i<pathPoses.size();i++) {
-            while (MathFunctions.distance(robotPose.getPoint(), pathPoses.get(i).getPoint()) > 0.6 || Math.abs(MathFunctions.angleWrap(pathPoses.get(i).getR()-robotPose.getR())) > Math.toRadians(3)) {
+        for (int i = 0; i<pathPoses.length;i++) {
+            while (MathFunctions.distance(robotPose.getPoint(), pathPoses[i].getPoint()) > 0.6 || Math.abs(MathFunctions.angleWrap(pathPoses[i].getR()-robotPose.getR())) > Math.toRadians(3)) {
                 otto.updateOdometry();
                 robotPose = otto.getPose();
                 robotPose = new Pose(robotPose.getX()+initPos.getX(), robotPose.getY()+initPos.getY(), robotPose.getR());
-                RobotMovement.goToPosition(pathPoses.get(i), movementSpeed, turnSpeed);
+                RobotMovement.goToPosition(pathPoses[i], movementSpeed, turnSpeed);
             }
             Actuation.drive(0,0,0);
         }

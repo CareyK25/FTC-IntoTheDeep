@@ -5,8 +5,8 @@ import org.firstinspires.ftc.teamcode.datatypes.Pose;
 public class FieldConstants {
     public static class Blue {
         public static class Left { // Closest to blue scoring basket area
-            public static Pose startPos;
-            public static Pose rightSample;
+            public static Pose startPos = new Pose(-36, -63.5, 0);
+            public static Pose rightSample = new Pose(28, -63.5, 0);
             public static Pose leftSample;
             public static Pose midSample;
             public static Pose park;
