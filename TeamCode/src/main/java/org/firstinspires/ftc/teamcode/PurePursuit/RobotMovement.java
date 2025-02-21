@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.PurePursuit;
 
+import static org.firstinspires.ftc.teamcode.util.Actuation.otto;
+
+import org.firstinspires.ftc.teamcode.control.Odometry;
 import org.firstinspires.ftc.teamcode.datatypes.CurvePoint;
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
 import org.firstinspires.ftc.teamcode.datatypes.Point;
@@ -12,15 +15,19 @@ import java.util.ArrayList;
 public class RobotMovement {
 
     private static int lastFoundIndex = 0;
+    public static Pose robotPose = new Pose(0,0,0);
+    public static Pose initPos = new Pose(0,0,0);
 
-    public static double[] goToPosition(Pose targetPose, Pose robotPose, double movementSpeed, double turnSpeed) {
+    public static void setup(Pose startPos) {
+        robotPose = startPos;
+        initPos = startPos;
+    }
+
+    public static double[] goToPosition(Pose targetPose, double movementSpeed, double turnSpeed) {
         double deltaX = targetPose.getX() - robotPose.getX();
         double deltaY = targetPose.getY() - robotPose.getY();
         double dist = Math.sqrt(Math.pow(deltaY, 2) + Math.pow(deltaX, 2));
         double deltaAngle = MathFunctions.angleWrap(targetPose.getR()-robotPose.getR());
-        // Global angle
-//        double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
-        double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);
         double dX = 0,dY = 0;
         if (dist != 0) {
             double movementXPower = deltaX/dist; // Normalizes the movement Power
@@ -28,11 +35,6 @@ public class RobotMovement {
             dX = movementXPower*movementSpeed;
             dY = movementYPower*movementSpeed;
         }
-        System.out.println("target angle: " + targetPose.getR() + " World Heading: " + robotPose.getR());
-        //Pair local = new Pair(dX, dY);
-        //local.rotate(deltaAngle);
-        System.out.println("Delta angle: " + deltaAngle);
-        //GraphicsLineCircle.deltaHeading = ((deltaAngle/Math.PI)*turnSpeed*180)/((Math.abs(deltaX) + Math.abs(deltaY)));
         double deltaHeading = 0;
         if (deltaAngle > Math.toRadians(3)) {
             deltaHeading = Math.max(((deltaAngle/(Math.PI))*turnSpeed), turnSpeed);
@@ -40,16 +42,13 @@ public class RobotMovement {
         else if (deltaHeading<Math.toRadians(-3)){
             deltaHeading = Math.min(((deltaAngle/(Math.PI))*turnSpeed), -turnSpeed);
         }
-        System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
-        //Actuation.drive(dX, dY, deltaHeading);
+        Actuation.drive(dX, dY, deltaHeading);
         return new double[]{dX, dY, deltaHeading};
     }
 
-    public static double[] goToPosition(Pose targetPose, Pose robotPose, double movementSpeed) {
+    public static double[] goToPosition(Pose targetPose, double movementSpeed) {
         double deltaX = targetPose.getX() - robotPose.getX();
         double deltaY = targetPose.getY() - robotPose.getY();
-        double absoluteAngleToTarget = Math.atan2(deltaY, deltaX);// Global angle
-        //double relativeAngleToTarget = MathFunctions.angleWrap(absoluteAngleToTarget-(Math.toRadians(robotPos.getR())-Math.toRadians(90)));
         double distance = MathFunctions.distance(new Point(targetPose.getX(), targetPose.getY()), new Point(robotPose.getX(), robotPose.getY()));
         double dX = 0, dY = 0;
         if (distance != 0) {
@@ -58,8 +57,20 @@ public class RobotMovement {
             dX = movementXPower*movementSpeed;
             dY = movementYPower*movementSpeed;
         }
-        //System.out.println("DeltaX: "+deltaX + " DeltaY:" + deltaY);
+        Actuation.drive(dX, dY, 0);
         return new double[]{dX, dY, 0};
+    }
+
+    public static double [] turnToPosition(Pose targetPose, double turnSpeed) {
+        double deltaAngle = MathFunctions.angleWrap(targetPose.getR()-robotPose.getR());
+        double deltaHeading = 0;
+        if (deltaAngle > Math.toRadians(3)) {
+            deltaHeading = Math.max(((deltaAngle/(Math.PI))*turnSpeed), turnSpeed);
+        }
+        else if (deltaHeading<Math.toRadians(-3)){
+            deltaHeading = Math.min(((deltaAngle/(Math.PI))*turnSpeed), -turnSpeed);
+        }
+        return new double[]{0,0,deltaHeading};
     }
 
     public static CurvePoint getFollowPointPath(ArrayList<CurvePoint> pathPoints, Pose robotPose, double followRadius) {
@@ -163,18 +174,9 @@ public class RobotMovement {
     public static CurvePoint followCurve(ArrayList<CurvePoint> allPoints, Pose robotPose) { // can be void return type
         CurvePoint followMe = getFollowPointPath(allPoints, robotPose, allPoints.get(0).getFollowDistance());
         if (lastFoundIndex != allPoints.size()-1 || MathFunctions.distance(robotPose.getPoint(), allPoints.get(allPoints.size()-1).toPoint()) >.6 || Math.abs(MathFunctions.angleWrap(allPoints.get(lastFoundIndex == allPoints.size()-1? allPoints.size()-1:lastFoundIndex+1).getTargetHeading()-robotPose.getR()))>Math.toRadians(2)) {
-            goToPosition(followMe.toPose(), robotPose, allPoints.get(lastFoundIndex+1).getMoveSpeed());
+            goToPosition(followMe.toPose(), allPoints.get(lastFoundIndex+1).getMoveSpeed());
         }
         return followMe;
-    }
-    public static void move(ArrayList<CurvePoint> allPoints, Pose robotPose) {
-        if (MathFunctions.distance(new Point(robotPose.getX(), robotPose.getY()), allPoints.get(lastFoundIndex+1).toPoint()) >.6 || Math.abs(MathFunctions.angleWrap(allPoints.get(lastFoundIndex+1).getTargetHeading()-robotPose.getR()))>Math.toRadians(2)) {
-            goToPosition(allPoints.get(lastFoundIndex+1).toPose(), robotPose, allPoints.get(lastFoundIndex+1).getMoveSpeed(), allPoints.get(lastFoundIndex+1).getTurnSpeed());
-            //System.out.println("Last Index: " + lastFoundIndex);
-        }
-        else if (lastFoundIndex != allPoints.size()-2) {
-            lastFoundIndex++;
-        }
     }
 
 }

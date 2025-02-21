@@ -29,22 +29,23 @@ public class Test_Pursuit_Mode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor[] motors;
     private Movement movement;
-    //private DcMotor piston;
-    private Servo testservo;
-    private Servo intake;
+    private DcMotor rightSlide;
+    private DcMotor leftSlide;
+    private Servo clawServo;
+    private Servo clawWristServo;
+    private Servo axleServoL;
+    private Servo axleServoR;
 
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
     private Odometry otto;
-    Pose targetPose = new Pose(new double[]{0, 0, Math.toRadians(135)});
+    Pose targetPose = new Pose(new double[]{0, 0, Math.toRadians(45)});
     //send encoders to odometry in order              [leftDeadwheel,  rightDeadwheel, backDeadwheel]
 
 
     @Override
     public void runOpMode() {
         motors = HardwareMapper.getMotors(hardwareMap);
-        //piston = hardwareMap.get(DcMotor.class, "piston");
-        //testservo = hardwareMap.get(Servo.class, "clawservomonkey");
-        //intake = hardwareMap.get(Servo.class, "intake");
+
 
         movement = new Movement(motors);
         otto = new Odometry(new DcMotor[] {motors[0], motors[1], motors[2]});
@@ -80,7 +81,7 @@ public class Test_Pursuit_Mode extends LinearOpMode {
         if (MathFunctions.distance(otto.getPose().getPoint(), targetPose.getPoint()) > 0.6 || Math.abs(MathFunctions.angleWrap(targetPose.getR()-otto.getPose().getR())) > Math.toRadians(3)) {
             double max;
             telemetry.addData("Dist", MathFunctions.distance(otto.getPose().getPoint(), targetPose.getPoint()));
-            double[] move = RobotMovement.goToPosition(targetPose, otto.getPose(), 0, 0.35);
+            double[] move = RobotMovement.goToPosition(targetPose, 0, 0.35);
             telemetry.addData("Move Array", Arrays.toString(move));
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -137,12 +138,10 @@ public class Test_Pursuit_Mode extends LinearOpMode {
 
         telemetry.addData("Driving is ", ((canDrive) ? "enabled" : "disabled"));
         telemetry.addData("s ", s);
-        //telemetry.addData("servo pose", testservo.getPosition());
         telemetry.addData("touch x", gamepad1.touchpad_finger_1_x);
         telemetry.addData("touch y", gamepad1.touchpad_finger_1_y);
         telemetry.addData("touch2 x", gamepad1.touchpad_finger_2_x);
         telemetry.addData("touch2 y", gamepad1.touchpad_finger_2_y);
-        //telemetry.addData("motorpos", piston.getCurrentPosition());
         telemetry.addData("gowthams Speed", gowthams_speed_hehe);
         telemetry.addData("odometry:", otto.getPose());
         telemetry.addData("left", gp1.getTouchpad_finger_1());
