@@ -68,7 +68,7 @@ public class Test_Op_Mode extends LinearOpMode {
         rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//
+
         leftSlideMotor.setTargetPosition(0);
         leftSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 

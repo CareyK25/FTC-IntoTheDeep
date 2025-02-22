@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.teamcode.util.MathFunctions;
 import java.util.Arrays;
 
 @TeleOp(name="Test_Persuit_Mode", group="Linear OpMode")
-
+@Disabled
 
 public class Test_Pursuit_Mode extends LinearOpMode {
 

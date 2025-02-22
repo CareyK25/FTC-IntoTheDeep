@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.util.Constants.BACK_RIGHT;
 import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_LEFT;
 import static org.firstinspires.ftc.teamcode.util.Constants.FRONT_RIGHT;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,7 +20,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.util.HardwareMapper;
 
 @TeleOp(name="Andys_Op_Mode", group="Linear OpMode")
-
+@Disabled
 
 public class Andys_Op_Mode extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
