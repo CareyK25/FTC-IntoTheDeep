@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.util.Actuation;
 public class LeftBlue extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Actuation.setup(hardwareMap, new Pose(0,0,0));
+        Actuation.setup(hardwareMap, new Pose(0,0,0), telemetry);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         waitForStart();
 
-        Pose [] p = new Pose[]{new Pose(0, 10, 0), new Pose(10, 10, 0), new Pose(10, 0, 0)};
+        Pose [] p = new Pose[]{new Pose(0, 10, 0)/*, new Pose(10, 10, 0), new Pose(10, 0, 0)*/};
         Route r = new Route(p);
-        r.run(0.4, 0.4);
+        r.run(0.3, 0.4);
     }
 }

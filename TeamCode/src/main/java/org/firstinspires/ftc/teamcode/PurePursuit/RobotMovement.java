@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.PurePursuit;
 
 import static org.firstinspires.ftc.teamcode.util.Actuation.otto;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.control.Odometry;
 import org.firstinspires.ftc.teamcode.datatypes.CurvePoint;
 import org.firstinspires.ftc.teamcode.datatypes.Pair;
@@ -17,10 +18,12 @@ public class RobotMovement {
     private static int lastFoundIndex = 0;
     public static Pose robotPose = new Pose(0,0,0);
     public static Pose initPos = new Pose(0,0,0);
+    public static Telemetry telemetry;
 
-    public static void setup(Pose startPos) {
+    public static void setup(Pose startPos, Telemetry t) {
         robotPose = startPos;
         initPos = startPos;
+        telemetry = t;
     }
 
     public static double[] goToPosition(Pose targetPose, double movementSpeed, double turnSpeed) {
@@ -42,6 +45,8 @@ public class RobotMovement {
         else if (deltaHeading<Math.toRadians(-3)){
             deltaHeading = Math.min(((deltaAngle/(Math.PI))*turnSpeed), -turnSpeed);
         }
+        telemetry.addData("Pose", robotPose);
+        telemetry.update();
         Actuation.drive(dX, dY, deltaHeading);
         return new double[]{dX, dY, deltaHeading};
     }
