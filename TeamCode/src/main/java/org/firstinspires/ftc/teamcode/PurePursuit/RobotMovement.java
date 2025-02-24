@@ -26,7 +26,7 @@ public class RobotMovement {
         telemetry = t;
     }
 
-    public static double[] goToPosition(Pose targetPose, Pose robotPose, double movementSpeed, double turnSpeed) {
+    public static double[] goToPosition(Pose targetPose, double movementSpeed, double turnSpeed) {
         double deltaX = targetPose.getX() - robotPose.getX();
         double deltaY = targetPose.getY() - robotPose.getY();
         double dist = Math.sqrt(Math.pow(deltaY, 2) + Math.pow(deltaX, 2));
@@ -45,9 +45,9 @@ public class RobotMovement {
         else if (deltaHeading<Math.toRadians(-3)){
             deltaHeading = Math.min(((deltaAngle/(Math.PI))*turnSpeed), -turnSpeed);
         }
-        //telemetry.addData("Pose", robotPose);
-        //telemetry.update();
-        //Actuation.drive(dY, dX, deltaHeading);
+        telemetry.addData("Pose", robotPose);
+        telemetry.update();
+        Actuation.drive(dY, dX, deltaHeading);
         return new double[]{dX, dY, deltaHeading};
     }
 

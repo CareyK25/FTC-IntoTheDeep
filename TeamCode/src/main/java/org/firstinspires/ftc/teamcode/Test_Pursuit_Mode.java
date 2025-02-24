@@ -72,7 +72,7 @@ public class Test_Pursuit_Mode extends LinearOpMode {
         if (MathFunctions.distance(otto.getPose().getPoint(), targetPose.getPoint()) > 0.6 || Math.abs(MathFunctions.angleWrap(targetPose.getR()-otto.getPose().getR())) > Math.toRadians(3)) {
             double max;
             telemetry.addData("Dist", MathFunctions.distance(otto.getPose().getPoint(), targetPose.getPoint()));
-            double[] move = RobotMovement.goToPosition(targetPose, otto.getPose(), 0.5, 0.35);
+            double[] move = RobotMovement.goToPosition(targetPose, 0.5, 0.35);
             telemetry.addData("Move Array", Arrays.toString(move));
 
 
