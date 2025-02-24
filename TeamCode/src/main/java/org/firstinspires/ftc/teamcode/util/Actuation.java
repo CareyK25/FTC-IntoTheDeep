@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.RobotConfigNameable;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PurePursuit.RobotMovement;
@@ -12,11 +13,17 @@ import org.firstinspires.ftc.teamcode.datatypes.Pose;
 public class Actuation {
     private static DcMotor[] motors;
     public static Odometry otto;
+    public static Servo axleServoR;
+    public static Servo axleServoL;
 
     public static void setup(HardwareMap map, Pose startPose, Telemetry t) {
          motors = HardwareMapper.getMotors(map);
+         axleServoL = map.get(Servo.class, "axleServoL");
+        axleServoR = map.get(Servo.class, "axleServoR");
          otto = new Odometry(new DcMotor[] {motors[0], motors[1], motors[2]});
          otto.resetEncoders();
+        axleServoL.setPosition(0.5);
+        axleServoR.setPosition(0.5);
         RobotMovement.setup(startPose, t);
     }
 

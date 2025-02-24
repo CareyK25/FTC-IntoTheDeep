@@ -18,6 +18,7 @@ public class LeftBlue extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+
         Pose [] p = new Pose[]{new Pose(0, 10, 0), new Pose(10, 10, 0), new Pose(10, 0, 0)};
         Route r = new Route(p);
         r.run(0.3, 0.4);
