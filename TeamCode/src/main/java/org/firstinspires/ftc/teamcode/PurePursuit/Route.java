@@ -24,7 +24,7 @@ public class Route {
                 otto.updateOdometry();
                 robotPose = otto.getPose();
                 robotPose = new Pose(robotPose.getX()+initPos.getX(), robotPose.getY()+initPos.getY(), robotPose.getR());
-                RobotMovement.goToPosition(pathPoses[i], movementSpeed, turnSpeed);
+                //RobotMovement.goToPosition(pathPoses[i], movementSpeed, turnSpeed);
             }
             Actuation.drive(0,0,0);
         }

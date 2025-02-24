@@ -26,7 +26,7 @@ public class RobotMovement {
         telemetry = t;
     }
 
-    public static double[] goToPosition(Pose targetPose, double movementSpeed, double turnSpeed) {
+    public static double[] goToPosition(Pose targetPose, Pose robotPose, double movementSpeed, double turnSpeed) {
         double deltaX = targetPose.getX() - robotPose.getX();
         double deltaY = targetPose.getY() - robotPose.getY();
         double dist = Math.sqrt(Math.pow(deltaY, 2) + Math.pow(deltaX, 2));
@@ -45,13 +45,13 @@ public class RobotMovement {
         else if (deltaHeading<Math.toRadians(-3)){
             deltaHeading = Math.min(((deltaAngle/(Math.PI))*turnSpeed), -turnSpeed);
         }
-        telemetry.addData("Pose", robotPose);
-        telemetry.update();
-        Actuation.drive(dX, dY, deltaHeading);
+        //telemetry.addData("Pose", robotPose);
+        //telemetry.update();
+        //Actuation.drive(dY, dX, deltaHeading);
         return new double[]{dX, dY, deltaHeading};
     }
 
-    public static double[] goToPosition(Pose targetPose, double movementSpeed) {
+    public static double[] goToPosition(Pose targetPose, Pose robotPose, double movementSpeed) {
         double deltaX = targetPose.getX() - robotPose.getX();
         double deltaY = targetPose.getY() - robotPose.getY();
         double distance = MathFunctions.distance(new Point(targetPose.getX(), targetPose.getY()), new Point(robotPose.getX(), robotPose.getY()));
@@ -179,7 +179,7 @@ public class RobotMovement {
     public static CurvePoint followCurve(ArrayList<CurvePoint> allPoints, Pose robotPose) { // can be void return type
         CurvePoint followMe = getFollowPointPath(allPoints, robotPose, allPoints.get(0).getFollowDistance());
         if (lastFoundIndex != allPoints.size()-1 || MathFunctions.distance(robotPose.getPoint(), allPoints.get(allPoints.size()-1).toPoint()) >.6 || Math.abs(MathFunctions.angleWrap(allPoints.get(lastFoundIndex == allPoints.size()-1? allPoints.size()-1:lastFoundIndex+1).getTargetHeading()-robotPose.getR()))>Math.toRadians(2)) {
-            goToPosition(followMe.toPose(), allPoints.get(lastFoundIndex+1).getMoveSpeed());
+            //goToPosition(followMe.toPose(), allPoints.get(lastFoundIndex+1).getMoveSpeed());
         }
         return followMe;
     }

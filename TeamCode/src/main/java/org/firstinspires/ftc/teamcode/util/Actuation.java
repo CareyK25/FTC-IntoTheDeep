@@ -30,7 +30,6 @@ public class Actuation {
         max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
-
         if (max > 1.0) {
             leftFrontPower  /= max;
             rightFrontPower /= max;

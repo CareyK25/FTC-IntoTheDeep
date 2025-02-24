@@ -120,10 +120,10 @@ public class Test_Op_Mode extends LinearOpMode {
 //        Gamepad.RumbleEffect ripple = rippleBuilder.build();
 
         double gowthams = 0.5;
-        double slideGowthams = 0.2;
+        double slideGowthams = 1;
 
 
-        double axleAngle = 0.5;
+        double axleAngle = (axleServoL.getPosition() + axleServoR.getPosition())/2;
         axleServoL.setPosition(0.5);
         axleServoR.setPosition(0.5);
         double clawServoPos = 0.12;
@@ -149,9 +149,14 @@ public class Test_Op_Mode extends LinearOpMode {
         // grab input state at beginning of loop and put it into an object
         InputState gp1 = new InputState(gamepad1);
         InputState gp2 = new InputState(gamepad2);
+
         // todo THUMBSTICKS to drive
         if (canDrive) {
-            temp_old_drive(gamepad1, gamepad2, gowthams, motors, telemetry);
+            if ((axleServoL.getPosition() > 0.69) || axleServoL.getPosition() < 0.45)  {
+                temp_old_drive(gamepad1, gamepad2, 0.45, motors, telemetry);
+            } else {
+                temp_old_drive(gamepad1, gamepad2, gowthams, motors, telemetry);
+            }
         }
 
         // todo OPTIONS to toggle driving GUIDE to toggle display
@@ -181,10 +186,16 @@ public class Test_Op_Mode extends LinearOpMode {
             bucketScoring = !bucketScoring;
         }
         // todo Crosspad thing
-        if (gp1.isDpad_left()) { // open and close claw
-            clawServo.setPosition(0.46);
-        } else if (gp1.isDpad_right()) {
-            clawServo.setPosition(0.14);
+        if (gp1.isDpad_right() && !pgp1.isDpad_right()) { // open and close claw
+            if (clawServo.getPosition() > 0.22) {
+                clawServo.setPosition(0.11);
+            } else {
+                clawServo.setPosition(0.46);
+            }
+        }
+        if (gp1.isDpad_left() && !pgp1.isDpad_left()) { // open and close claw
+            clawWristServoPos = 0.5;
+            clawWristServo.setPosition(clawWristServoPos);
         }
 
         if (gp1.isDpad_up()) { // rotate claw formard and back
@@ -194,13 +205,18 @@ public class Test_Op_Mode extends LinearOpMode {
             clawWristServoPos -= 0.01;
             clawWristServo.setPosition(clawWristServoPos);
         }
-        clawWristServoPos = bound(clawWristServoPos, 0.176, 0.772);
+        clawWristServoPos = bound(clawWristServoPos, 0.146, 0.772);
 
         // todo REGULAR BUTTONS
         if (gp1.isSquare()) {
             axleAngle = 0.73;
             axleServoR.setPosition(axleAngle);
             axleServoL.setPosition(axleAngle);
+
+            clawWristServoPos = 0.5;
+            clawWristServo.setPosition(clawWristServoPos);
+            clawServo.setPosition(0.46);
+
         }
         if (gp1.isCircle()) {
             axleAngle = 0.44;
@@ -208,12 +224,12 @@ public class Test_Op_Mode extends LinearOpMode {
             axleServoL.setPosition(axleAngle);
 
 
-            leftSlidePos = -1985;
+            leftSlidePos = -1980;
             leftSlideMotor.setTargetPosition(leftSlidePos + leftSlidePosOffset);
             leftSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             leftSlideMotor.setPower(slideGowthams);
 
-            rightSlidePos = -1985;
+            rightSlidePos = -1980;
             rightSlideMotor.setTargetPosition(rightSlidePos + rightSlidePosOffset);
             rightSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             rightSlideMotor.setPower(slideGowthams);
@@ -252,11 +268,11 @@ public class Test_Op_Mode extends LinearOpMode {
             rightSlideMotor.setPower(slideGowthams);
 
         }
-        leftSlidePos = (int)bound(leftSlidePos, -1970, 0);
-        rightSlidePos = (int)bound(rightSlidePos, -1970, 0);
+        leftSlidePos = (int)bound(leftSlidePos, -1980, 0);
+        rightSlidePos = (int)bound(rightSlidePos, -1980, 0);
 
         // todo TRIGGERS
-        if (gp1.getLeft_trigger() > 0.9) {
+        if (gp1.getLeft_trigger() > 0.9) { // up
             axleAngle-= 0.0035;
             axleServoL.setPosition(axleAngle);
             axleServoR.setPosition(axleAngle);
@@ -274,21 +290,22 @@ public class Test_Op_Mode extends LinearOpMode {
         // 0.67 lift
         //
 
-        axleAngle = bound(axleAngle, 0.4, 0.73);
+        axleAngle = bound(axleAngle, 0.42, 0.74);
 
 
 
 
         // todo BUMPERS
+
         if (gp1.isLeft_bumper() && !pgp1.isLeft_bumper()) {
 
-            if (gp1.isTriangle()) {
+            if (!canDrive) {
                 slideGowthams += 0.1;
             } else {
                 gowthams+= 0.1;
             }
         } else if (gp1.isRight_bumper() && !pgp1.isRight_bumper()) {
-            if (gp1.isTriangle()) {
+            if (!canDrive) {
                 slideGowthams -= 0.1;
             } else {
                 gowthams+= 0.1;
